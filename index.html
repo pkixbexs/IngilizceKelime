@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İngilizce Kelime Oyunu (Tüm Kelimeler)</title>
+    
+    <style>
+        /* Siyah Tema CSS Stil Ayarları */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        #app-container {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        #start-screen h2 {
+            color: #00bcd4;
+            margin-bottom: 50px;
+        }
+        
+        /* Başlatma Butonu */
+        #start-button { 
+            background-color: #4caf50; 
+            color: black;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        #start-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Sayaç Stil Ayarı */
+        #score-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ff9800;
+        }
+        #score-display span {
+            margin: 0 10px;
+        }
+
+        #word-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: #4caf50;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        .option-button {
+            background-color: #333333;
+            color: #ffffff;
+            border: 1px solid #444444;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.15s, transform 0.1s;
+        }
+
+        .option-button:hover:not(:disabled) {
+            background-color: #555555;
+        }
+
+        /* Geri Bildirim Renkleri */
+        .option-button.correct {
+            background-color: #4caf50 !important; /* Doğru */
+            color: white;
+            font-weight: bold;
+        }
+
+        .option-button.incorrect {
+            background-color: #f44336 !important; /* Yanlış */
+            color: white;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        #next-button {
+            background-color: #ff9800;
+            color: black;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        #next-button:hover {
+            background-color: #e68a00;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <div id="start-screen">
+            <h2>İngilizce Kelime Testine Hoş Geldiniz!</h2>
+            <p>Toplam **60** kelime ile pratik yapmaya hazırsınız.</p>
+            <div id="initial-score-display">
+                <span style="color: #4caf50;">✅ Doğru: 0</span>
+                <span style="color: #f44336;">❌ Yanlış: 0</span>
+            </div>
+            <button id="start-button">OYUNU BAŞLAT</button>
+        </div>
+        
+        <div id="game-container" style="display:none;"> 
+            <div id="score-display">
+                <span id="correct-score" style="color: #4caf50;">✅ Doğru: 0</span>
+                <span id="incorrect-score" style="color: #f44336;">❌ Yanlış: 0</span>
+            </div>
+            
+            <div id="word-display">KELİME YÜKLENİYOR...</div>
+            
+            <div id="options-container">
+                <button class="option-button" data-key="A"></button>
+                <button class="option-button" data-key="B"></button>
+                <button class="option-button" data-key="C"></button>
+                <button class="option-button" data-key="D"></button>
+                <button class="option-button" data-key="E"></button>
+            </div>
+
+            <div id="feedback"></div>
+            <button id="next-button" style="display:none;">Sonraki Kelime</button>
+        </div>
+    </div>
+
+    <script>
+        // --- YARDIMCI FONKSİYON ---
+        function toTurkishLowerCase(text) {
+            if (!text) return '';
+            return text.toLocaleLowerCase('tr');
+        }
+
+        // --- KELİME LİSTESİ: TÜM 60 KELİME ---
+        const allWords = [
+            { "english": "Ordinary", "turkish": toTurkishLowerCase("sıradan") },
+            { "english": "Quaint", "turkish": toTurkishLowerCase("ilginç, sevimli eski tarz") },
+            { "english": "Outskirts", "turkish": toTurkishLowerCase("kenar mahalleler, şehrin dışı") },
+            { "english": "Immersing", "turkish": toTurkishLowerCase("dalmak, kendini kaptırmak") },
+            { "english": "Fixing up", "turkish": toTurkishLowerCase("tamir etme, toparlama") },
+            { "english": "Relatively", "turkish": toTurkishLowerCase("nispeten") },
+            { "english": "Uneventful", "turkish": toTurkishLowerCase("olaysız, sakin") },
+            { "english": "Hurdle", "turkish": toTurkishLowerCase("engel") },
+            { "english": "Encountered", "turkish": toTurkishLowerCase("karşılaştı") },
+            { "english": "Draughty (Drafty)", "turkish": toTurkishLowerCase("cereyan yapan") },
+            { "english": "Crisp", "turkish": toTurkishLowerCase("serin/ferah; gevrek") },
+            { "english": "Weird", "turkish": toTurkishLowerCase("tuhaf") },
+            { "english": "Erratically", "turkish": toTurkishLowerCase("düzensizce") },
+            { "english": "Curiosity", "turkish": toTurkishLowerCase("merak") },
+            { "english": "Staring at", "turkish": toTurkishLowerCase("dik dik bakmak") },
+            { "english": "Phenomenon", "turkish": toTurkishLowerCase("olgu, fenomen") },
+            { "english": "Blend in", "turkish": toTurkishLowerCase("uyum sağlamak") },
+            { "english": "Abducted", "turkish": toTurkishLowerCase("kaçırıldı") },
+            { "english": "Aliens", "turkish": toTurkishLowerCase("uzaylılar") },
+            { "english": "Spin", "turkish": toTurkishLowerCase("dönmek") },
+            { "english": "Humanoid", "turkish": toTurkishLowerCase("insansı") },
+            { "english": "Elongated", "turkish": toTurkishLowerCase("uzamış") },
+            { "english": "Limbs", "turkish": toTurkishLowerCase("uzuvlar") },
+            { "english": "Bluish", "turkish": toTurkishLowerCase("mavimsi") },
+            { "english": "Eerie", "turkish": toTurkishLowerCase("ürkütücü") },
+            { "english": "Grace", "turkish": toTurkishLowerCase("zarafet") },
+            { "english": "Approached", "turkish": toTurkishLowerCase("yaklaştı") },
+            { "english": "Forehead", "turkish": toTurkishLowerCase("alın") },
+            { "english": "Echo", "turkish": toTurkishLowerCase("yankı") },
+            { "english": "Glance", "turkish": toTurkishLowerCase("hızlı bakış") },
+            { "english": "Mutter", "turkish": toTurkishLowerCase("mırıldanmak") },
+            { "english": "Telepathically", "turkish": toTurkishLowerCase("telepatik olarak") },
+            { "english": "Subside", "turkish": toTurkishLowerCase("yatışmak") },
+            { "english": "Renew", "turkish": toTurkishLowerCase("yenilemek") },
+            { "english": "Overwhelming", "turkish": toTurkishLowerCase("bunaltıcı") }, 
+            { "english": "Surged into", "turkish": toTurkishLowerCase("içine doğru aktı") }, 
+            { "english": "Snooker", "turkish": toTurkishLowerCase("snooker (bilardo türü)") },
+            { "english": "Consent", "turkish": toTurkishLowerCase("onay, rıza") },
+            { "english": "Impeccable", "turkish": toTurkishLowerCase("kusursuz") },
+            { "english": "Precision", "turkish": toTurkishLowerCase("hassasiyet") },
+            { "english": "Initial", "turkish": toTurkishLowerCase("ilk, başlangıç") },
+            { "english": "Probe", "turkish": toTurkishLowerCase("incelemek") },
+            { "english": "Nod", "turkish": toTurkishLowerCase("başını sallamak") },
+            { "english": "Confer", "turkish": toTurkishLowerCase("görüşmek, danışmak") },
+            { "english": "Indicates", "turkish": toTurkishLowerCase("gösterir") },
+            { "english": "Chuckling", "turkish": toTurkishLowerCase("kıkırdama") },
+            { "english": "Unblinking", "turkish": toTurkishLowerCase("gözünü kırpmadan") },
+            { "english": "Respond", "turkish": toTurkishLowerCase("cevap vermek") },
+            { "english": "Interstellar", "turkish": toTurkishLowerCase("yıldızlararası") },
+            { "english": "Kidnapped", "turkish": toTurkishLowerCase("kaçırıldı") },
+            { "english": "Wisdom", "turkish": toTurkishLowerCase("bilgelik") },
+            { "english": "Insistence", "turkish": toTurkishLowerCase("ısrar") },
+            { "english": "Intact", "turkish": toTurkishLowerCase("sağlam, bozulmamış") },
+            { "english": "Enhanced", "turkish": toTurkishLowerCase("geliştirilmiş") },
+            { "english": "Fizzing with", "turkish": toTurkishLowerCase("enerji dolu") },
+            { "english": "Resumed", "turkish": toTurkishLowerCase("devam etti") },
+            { "english": "Captivated", "turkish": toTurkishLowerCase("büyülenmiş") },
+            { "english": "Encounter", "turkish": toTurkishLowerCase("karşılaşma") },
+            { "english": "Cherished", "turkish": toTurkishLowerCase("değer verilen, çok sevilen") },
+            { "english": "Convinced", "turkish": toTurkishLowerCase("ikna olmuş") }
+        ];
+
+
+        // --- GLOBAL DEĞİŞKENLER VE DOM ELEMENTLERİ ---
+        let activeWordList = [];
+        let currentWord = {};
+        let currentCorrectAnswer = "";
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        const startScreen = document.getElementById('start-screen');
+        const gameContainer = document.getElementById('game-container');
+        const wordDisplay = document.getElementById('word-display');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackDiv = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-button');
+        const optionButtons = optionsContainer.querySelectorAll('.option-button');
+        const startButton = document.getElementById('start-button'); 
+        
+        // Skor Sayaçları DOM Elementleri
+        const correctScoreDisplay = document.getElementById('correct-score');
+        const incorrectScoreDisplay = document.getElementById('incorrect-score');
+
+        // --- YARDIMCI FONKSİYONLAR ---
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function updateScoreDisplay() {
+            correctScoreDisplay.textContent = `✅ Doğru: ${correctCount}`;
+            incorrectScoreDisplay.textContent = `❌ Yanlış: ${incorrectCount}`;
+        }
+
+        // --- OYUN AKIŞI FONKSİYONLARI ---
+
+        function startGame() {
+            // Skoru sıfırla ve göstergeleri güncelle
+            correctCount = 0;
+            incorrectCount = 0;
+            updateScoreDisplay();
+
+            // Tüm kelimeleri karıştırarak aktif listeye ata
+            activeWordList = shuffleArray([...allWords]);
+            
+            // Başlangıç ekranını gizle, oyun ekranını göster
+            startScreen.style.display = 'none';
+            gameContainer.style.display = 'block';
+
+            loadNewWord();
+        }
+
+        function loadNewWord() {
+            // Önceki geri bildirimleri temizle
+            feedbackDiv.textContent = "";
+            nextButton.style.display = 'none';
+            optionsContainer.style.display = 'block';
+            
+            // Buton sınıflarını ve engellemeyi temizle
+            optionButtons.forEach(button => {
+                button.disabled = false;
+                button.classList.remove('correct', 'incorrect');
+            });
+
+
+            if (activeWordList.length === 0) {
+                wordDisplay.textContent = "Tebrikler! Tüm 60 kelimeyi bitirdiniz.";
+                optionsContainer.style.display = 'none';
+                feedbackDiv.textContent = `Final Skorunuz: Doğru: ${correctCount} / Yanlış: ${incorrectCount}`;
+                return;
+            }
+
+            // 1. Rastgele kelime seç
+            const randomIndex = Math.floor(Math.random() * activeWordList.length);
+            currentWord = activeWordList[randomIndex];
+            
+            currentCorrectAnswer = currentWord.turkish; 
+            
+            // İngilizce kelimeyi küçük harfe çevirip ekrana basıyoruz
+            wordDisplay.textContent = currentWord.english.toLocaleLowerCase('en').replace(/ \(.+\)/g, ''); 
+
+            // Seçilen kelimeyi listeden çıkar (tekrar etmemesi için)
+            activeWordList.splice(randomIndex, 1); 
+
+            // 2. Yanlış şıkları hazırla (4 adet)
+            const allTurkishMeanings = allWords.map(w => w.turkish);
+            
+            // Doğru cevabı hariç tutarak yanlış cevapları seç
+            let wrongAnswers = allTurkishMeanings.filter(t => t !== currentCorrectAnswer);
+            
+            // Rastgele 4 yanlış anlam seç
+            wrongAnswers = shuffleArray(wrongAnswers).slice(0, 4); 
+
+            // 3. Şıkları oluştur ve karıştır
+            const allOptions = [currentCorrectAnswer, ...wrongAnswers];
+            const shuffledOptions = shuffleArray(allOptions);
+
+            // 4. Şıkları butona yerleştir
+            optionButtons.forEach((button, index) => {
+                button.textContent = `${String.fromCharCode(65 + index)}) ${shuffledOptions[index]}`;
+                button.value = shuffledOptions[index];
+            });
+        }
+
+        function checkAnswer(selectedMeaning) {
+            // Tüm butonları devre dışı bırak
+            optionButtons.forEach(button => {
+                button.disabled = true;
+            });
+            
+            const selectedButton = Array.from(optionButtons).find(btn => btn.value === selectedMeaning);
+            const correctAnswerButton = Array.from(optionButtons).find(btn => btn.value === currentCorrectAnswer);
+
+            if (selectedMeaning === currentCorrectAnswer) {
+                // Doğru cevap
+                correctCount++;
+                feedbackDiv.textContent = "✅ Doğru!";
+                if (selectedButton) {
+                    selectedButton.classList.add('correct');
+                }
+            } else {
+                // Yanlış cevap
+                incorrectCount++;
+                feedbackDiv.textContent = `❌ Yanlış! Doğru cevap: "${currentCorrectAnswer}" idi.`;
+                if (selectedButton) {
+                    selectedButton.classList.add('incorrect');
+                }
+                // Doğru cevabı işaretle
+                if (correctAnswerButton) {
+                    correctAnswerButton.classList.add('correct');
+                }
+            }
+            
+            updateScoreDisplay();
+            nextButton.style.display = 'block';
+        }
+
+        // --- EVENT DİNLEYİCİLERİ ---
+        startButton.addEventListener('click', startGame); 
+
+        optionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                checkAnswer(button.value);
+            });
+        });
+
+        nextButton.addEventListener('click', loadNewWord);
+
+    </script>
+</body>
+</html>
