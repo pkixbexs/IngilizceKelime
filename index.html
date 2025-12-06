@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İngilizce Kelime Oyunu (Tüm Kelimeler)</title>
+    <title>İngilizce Kelime Oyunu (İngilizce Tanımlı)</title>
     
     <style>
         /* Siyah Tema CSS Stil Ayarları */
@@ -68,6 +68,7 @@
             color: #4caf50;
             margin-bottom: 40px;
             letter-spacing: 2px;
+            text-transform: uppercase; /* Kelimeyi büyük harf yapıyoruz */
         }
 
         .option-button {
@@ -129,8 +130,8 @@
     <div id="app-container">
         
         <div id="start-screen">
-            <h2>İngilizce Kelime Testine Hoş Geldiniz!</h2>
-            <p>Toplam **94** kelime ile pratik yapmaya hazırsınız.</p>
+            <h2>İngilizce Tanım Testine Hoş Geldiniz!</h2>
+            <p>Toplam **94** İngilizce kelimenin tanımını bulmaya çalışacaksınız.</p>
             <div id="initial-score-display">
                 <span style="color: #4caf50;">✅ Doğru: 0</span>
                 <span style="color: #f44336;">❌ Yanlış: 0</span>
@@ -144,7 +145,7 @@
                 <span id="incorrect-score" style="color: #f44336;">❌ Yanlış: 0</span>
             </div>
             
-            <div id="word-display">KELİME YÜKLENİYOR...</div>
+            <div id="word-display">WORD LOADING...</div>
             
             <div id="options-container">
                 <button class="option-button" data-key="A"></button>
@@ -155,116 +156,114 @@
             </div>
 
             <div id="feedback"></div>
-            <button id="next-button" style="display:none;">Sonraki Kelime</button>
+            <button id="next-button" style="display:none;">Next Word</button>
         </div>
     </div>
 
     <script>
-        // --- YARDIMCI FONKSİYON ---
-        function toTurkishLowerCase(text) {
+        // Artık Türkçe küçük harf fonksiyonu yerine, sadece standart küçük harf kullanacağız.
+        function toEnglishLowerCase(text) {
             if (!text) return '';
-            return text.toLocaleLowerCase('tr');
+            return text.toLowerCase();
         }
 
-        // --- KELİME LİSTESİ: TÜM 94 KELİME ---
+        // --- KELİME LİSTESİ: TÜM 94 KELİME VE İNGİLİZCE TANIMLARI ---
         const allWords = [
-            // --- ESKİ 60 KELİME ---
-            { "english": "Ordinary", "turkish": toTurkishLowerCase("sıradan") },
-            { "english": "Quaint", "turkish": toTurkishLowerCase("ilginç, sevimli eski tarz") },
-            { "english": "Outskirts", "turkish": toTurkishLowerCase("kenar mahalleler, şehrin dışı") },
-            { "english": "Immersing", "turkish": toTurkishLowerCase("dalmak, kendini kaptırmak") },
-            { "english": "Fixing up", "turkish": toTurkishLowerCase("tamir etme, toparlama") },
-            { "english": "Relatively", "turkish": toTurkishLowerCase("nispeten") },
-            { "english": "Uneventful", "turkish": toTurkishLowerCase("olaysız, sakin") },
-            { "english": "Hurdle", "turkish": toTurkishLowerCase("engel") },
-            { "english": "Encountered", "turkish": toTurkishLowerCase("karşılaştı") },
-            { "english": "Draughty (Drafty)", "turkish": toTurkishLowerCase("cereyan yapan") },
-            { "english": "Crisp", "turkish": toTurkishLowerCase("serin/ferah; gevrek") },
-            { "english": "Weird", "turkish": toTurkishLowerCase("tuhaf") },
-            { "english": "Erratically", "turkish": toTurkishLowerCase("düzensizce") },
-            { "english": "Curiosity", "turkish": toTurkishLowerCase("merak") },
-            { "english": "Staring at", "turkish": toTurkishLowerCase("dik dik bakmak") },
-            { "english": "Phenomenon", "turkish": toTurkishLowerCase("olgu, fenomen") },
-            { "english": "Blend in", "turkish": toTurkishLowerCase("uyum sağlamak") },
-            { "english": "Abducted", "turkish": toTurkishLowerCase("kaçırıldı") },
-            { "english": "Aliens", "turkish": toTurkishLowerCase("uzaylılar") },
-            { "english": "Spin", "turkish": toTurkishLowerCase("dönmek") },
-            { "english": "Humanoid", "turkish": toTurkishLowerCase("insansı") },
-            { "english": "Elongated", "turkish": toTurkishLowerCase("uzamış") },
-            { "english": "Limbs", "turkish": toTurkishLowerCase("uzuvlar") },
-            { "english": "Bluish", "turkish": toTurkishLowerCase("mavimsi") },
-            { "english": "Eerie", "turkish": toTurkishLowerCase("ürkütücü") },
-            { "english": "Grace", "turkish": toTurkishLowerCase("zarafet") },
-            { "english": "Approached", "turkish": toTurkishLowerCase("yaklaştı") },
-            { "english": "Forehead", "turkish": toTurkishLowerCase("alın") },
-            { "english": "Echo", "turkish": toTurkishLowerCase("yankı") },
-            { "english": "Glance", "turkish": toTurkishLowerCase("hızlı bakış") },
-            { "english": "Mutter", "turkish": toTurkishLowerCase("mırıldanmak") },
-            { "english": "Telepathically", "turkish": toTurkishLowerCase("telepatik olarak") },
-            { "english": "Subside", "turkish": toTurkishLowerCase("yatışmak") },
-            { "english": "Renew", "turkish": toTurkishLowerCase("yenilemek") },
-            { "english": "Overwhelming", "turkish": toTurkishLowerCase("bunaltıcı") }, 
-            { "english": "Surged into", "turkish": toTurkishLowerCase("içine doğru aktı") }, 
-            { "english": "Snooker", "turkish": toTurkishLowerCase("snooker (bilardo türü)") },
-            { "english": "Consent", "turkish": toTurkishLowerCase("onay, rıza") },
-            { "english": "Impeccable", "turkish": toTurkishLowerCase("kusursuz") },
-            { "english": "Precision", "turkish": toTurkishLowerCase("hassasiyet") },
-            { "english": "Initial", "turkish": toTurkishLowerCase("ilk, başlangıç") },
-            { "english": "Probe", "turkish": toTurkishLowerCase("incelemek") },
-            { "english": "Nod", "turkish": toTurkishLowerCase("başını sallamak") },
-            { "english": "Confer", "turkish": toTurkishLowerCase("görüşmek, danışmak") },
-            { "english": "Indicates", "turkish": toTurkishLowerCase("gösterir") },
-            { "english": "Chuckling", "turkish": toTurkishLowerCase("kıkırdama") },
-            { "english": "Unblinking", "turkish": toTurkishLowerCase("gözünü kırpmadan") },
-            { "english": "Respond", "turkish": toTurkishLowerCase("cevap vermek") },
-            { "english": "Interstellar", "turkish": toTurkishLowerCase("yıldızlararası") },
-            { "english": "Kidnapped", "turkish": toTurkishLowerCase("kaçırıldı") },
-            { "english": "Wisdom", "turkish": toTurkishLowerCase("bilgelik") },
-            { "english": "Insistence", "turkish": toTurkishLowerCase("ısrar") },
-            { "english": "Intact", "turkish": toTurkishLowerCase("sağlam, bozulmamış") },
-            { "english": "Enhanced", "turkish": toTurkishLowerCase("geliştirilmiş") },
-            { "english": "Fizzing with", "turkish": toTurkishLowerCase("enerji dolu") },
-            { "english": "Resumed", "turkish": toTurkishLowerCase("devam etti") },
-            { "english": "Captivated", "turkish": toTurkishLowerCase("büyülenmiş") },
-            { "english": "Encounter", "turkish": toTurkishLowerCase("karşılaşma") },
-            { "english": "Cherished", "turkish": toTurkishLowerCase("değer verilen, çok sevilen") },
-            { "english": "Convinced", "turkish": toTurkishLowerCase("ikna olmuş") },
-
-            // --- YENİ 34 KELİME ---
-            { "english": "Curious", "turkish": toTurkishLowerCase("meraklı") },
-            { "english": "Properly", "turkish": toTurkishLowerCase("düzgünce") },
-            { "english": "Phone reception", "turkish": toTurkishLowerCase("telefon çekimi") },
-            { "english": "Mark", "turkish": toTurkishLowerCase("işaret") },
-            { "english": "Civilization", "turkish": toTurkishLowerCase("medeniyet") },
-            { "english": "Venture out", "turkish": toTurkishLowerCase("dışarı çıkmak, macera atılmak") },
-            { "english": "To head", "turkish": toTurkishLowerCase("yönelmek, gitmek") },
-            { "english": "Set off", "turkish": toTurkishLowerCase("yola çıkmak, başlatmak") },
-            { "english": "Layout", "turkish": toTurkishLowerCase("düzen, yerleşim") },
-            { "english": "Approach", "turkish": toTurkishLowerCase("yaklaşım") },
-            { "english": "Dull", "turkish": toTurkishLowerCase("sıkıcı, donuk") },
-            { "english": "Dreary", "turkish": toTurkishLowerCase("kasvetli, iç karartıcı") },
-            { "english": "Branches", "turkish": toTurkishLowerCase("dallar") },
-            { "english": "Overgrown", "turkish": toTurkishLowerCase("aşırı büyümüş") },
-            { "english": "Greet", "turkish": toTurkishLowerCase("selamlamak") },
-            { "english": "Beckon", "turkish": toTurkishLowerCase("işaret etmek, çağırmak") },
-            { "english": "Run errands", "turkish": toTurkishLowerCase("ayak işlerini halletmek") },
-            { "english": "Enduring", "turkish": toTurkishLowerCase("dayanıklı, süregelen") },
-            { "english": "Competitive", "turkish": toTurkishLowerCase("rekabetçi") },
-            { "english": "Assure", "turkish": toTurkishLowerCase("temin etmek, garanti vermek") },
-            { "english": "Despite", "turkish": toTurkishLowerCase("rağmen") },
-            { "english": "Dreadful", "turkish": toTurkishLowerCase("korkunç, berbat") },
-            { "english": "Efficient", "turkish": toTurkishLowerCase("verimli") },
-            { "english": "Shrug", "turkish": toTurkishLowerCase("omuz silkmek") },
-            { "english": "Aggravate", "turkish": toTurkishLowerCase("kötüleştirmek, sinirlendirmek") },
-            { "english": "My own sake", "turkish": toTurkishLowerCase("kendi iyiliğim için") },
-            { "english": "Insistent", "turkish": toTurkishLowerCase("ısrarcı") },
-            { "english": "Assume", "turkish": toTurkishLowerCase("varsaymak, farz etmek") },
-            { "english": "Irritable", "turkish": toTurkishLowerCase("sinirli, çabuk sinirlenen") },
-            { "english": "Strangely", "turkish": toTurkishLowerCase("tuhaf bir şekilde") },
-            { "english": "Ecstatic", "turkish": toTurkishLowerCase("coşkulu, çok mutlu") },
-            { "english": "Hastily", "turkish": toTurkishLowerCase("aceleyle") },
-            { "english": "Urge", "turkish": toTurkishLowerCase("zorlamak, teşvik etmek") },
-            { "english": "Impatient", "turkish": toTurkishLowerCase("sabırsız") }
+            // Tanımlar, daha önce sağladığınız 'Eş Anlamlılar' (Synonym) listeleri baz alınarak hazırlandı.
+            { "english": "Ordinary", "definition": "usual, common, or typical" },
+            { "english": "Quaint", "definition": "charming, picturesque, old-fashioned" },
+            { "english": "Outskirts", "definition": "suburbs, fringe, or the edge of a town" },
+            { "english": "Immersing", "definition": "absorbing, engaging, or plunging into something" },
+            { "english": "Fixing up", "definition": "repairing, renovating, or mending" },
+            { "english": "Relatively", "definition": "comparatively, fairly, or somewhat" },
+            { "english": "Uneventful", "definition": "calm, quiet, or routine" },
+            { "english": "Hurdle", "definition": "obstacle, barrier, or difficulty" },
+            { "english": "Encountered", "definition": "met, came across, or faced" },
+            { "english": "Draughty (Drafty)", "definition": "breezy, chilly, or windy" },
+            { "english": "Crisp", "definition": "fresh, cool, or crunchy" },
+            { "english": "Weird", "definition": "strange, odd, or unusual" },
+            { "english": "Erratically", "definition": "unpredictably, irregularly, or randomly" },
+            { "english": "Curiosity", "definition": "inquisitiveness, interest, or wonder" },
+            { "english": "Staring at", "definition": "gazing at, looking fixedly, or watching" },
+            { "english": "Phenomenon", "definition": "event, occurrence, or happening" },
+            { "english": "Blend in", "definition": "fit in, merge, or integrate" },
+            { "english": "Abducted", "definition": "kidnapped, seized, or taken away" },
+            { "english": "Aliens", "definition": "extraterrestrials or beings from another world" },
+            { "english": "Spin", "definition": "rotate, whirl, or twirl" },
+            { "english": "Humanoid", "definition": "human-like or anthropoid" },
+            { "english": "Elongated", "definition": "extended, lengthened, or stretched" },
+            { "english": "Limbs", "definition": "appendages, arms, or legs" },
+            { "english": "Bluish", "definition": "blue-tinted or azure-ish" },
+            { "english": "Eerie", "definition": "spooky, uncanny, or creepy" },
+            { "english": "Grace", "definition": "elegance, poise, or refinement" },
+            { "english": "Approached", "definition": "came near, moved toward, or advanced" },
+            { "english": "Forehead", "definition": "the brow" },
+            { "english": "Echo", "definition": "reverberation or resound" },
+            { "english": "Glance", "definition": "peek, glimpse, or look briefly" },
+            { "english": "Mutter", "definition": "mumble, murmur, or whisper" },
+            { "english": "Telepathically", "definition": "psychically or mind-to-mind" },
+            { "english": "Subside", "definition": "diminish, lessen, or ease" },
+            { "english": "Renew", "definition": "restore, refresh, or revive" },
+            { "english": "Overwhelming", "definition": "overpowering or intense" }, 
+            { "english": "Surged into", "definition": "flooded, rushed, or intensified into" }, 
+            { "english": "Snooker", "definition": "a type of cue sport or billiards game" },
+            { "english": "Consent", "definition": "permission, approval, or agreement" },
+            { "english": "Impeccable", "definition": "flawless, perfect, or immaculate" },
+            { "english": "Precision", "definition": "accuracy, exactness, or meticulousness" },
+            { "english": "Initial", "definition": "first, preliminary, or original" },
+            { "english": "Probe", "definition": "investigate, examine, or explore" },
+            { "english": "Nod", "definition": "to agree, or dip one's head" },
+            { "english": "Confer", "definition": "consult, discuss, or deliberate" },
+            { "english": "Indicates", "definition": "shows, signifies, or points out" },
+            { "english": "Chuckling", "definition": "giggling or laughing softly" },
+            { "english": "Unblinking", "definition": "staring, or fixed-eyed" },
+            { "english": "Respond", "definition": "reply, answer, or react" },
+            { "english": "Interstellar", "definition": "cosmic or between stars" },
+            { "english": "Kidnapped", "definition": "abducted, seized, or taken" },
+            { "english": "Wisdom", "definition": "insight, knowledge, or sagacity" },
+            { "english": "Insistence", "definition": "persistence, demand, or emphasis" },
+            { "english": "Intact", "definition": "undamaged, whole, or complete" },
+            { "english": "Enhanced", "definition": "improved, boosted, or augmented" },
+            { "english": "Fizzing with", "definition": "bubbling with, or brimming with energy" },
+            { "english": "Resumed", "definition": "continued, restarted, or carried on" },
+            { "english": "Captivated", "definition": "fascinated, enchanted, or enthralled" },
+            { "english": "Encounter", "definition": "a meeting, confrontation, or run-in" },
+            { "english": "Cherished", "definition": "treasured, beloved, or precious" },
+            { "english": "Convinced", "definition": "persuaded, assured, or certain" },
+            { "english": "Curious", "definition": "eager to know or learn something" },
+            { "english": "Properly", "definition": "correctly, suitably, or appropriately" },
+            { "english": "Phone reception", "definition": "signal strength of a mobile phone" },
+            { "english": "Mark", "definition": "a symbol, stain, or indication" },
+            { "english": "Civilization", "definition": "human society with its culture and way of life" },
+            { "english": "Venture out", "definition": "to dare to go somewhere or start an activity" },
+            { "english": "To head", "definition": "to move in a specified direction" },
+            { "english": "Set off", "definition": "to begin a journey or start an event" },
+            { "english": "Layout", "definition": "the arrangement or design of something" },
+            { "english": "Approach", "definition": "the method or way of dealing with something" },
+            { "english": "Dull", "definition": "boring, uninteresting, or not bright" },
+            { "english": "Dreary", "definition": "gloomy, dismal, or depressing" },
+            { "english": "Branches", "definition": "subdivisions or parts extending from a main trunk" },
+            { "english": "Overgrown", "definition": "covered with too much vegetation" },
+            { "english": "Greet", "definition": "to welcome or acknowledge someone" },
+            { "english": "Beckon", "definition": "to signal or call someone over" },
+            { "english": "Run errands", "definition": "to perform small personal tasks" },
+            { "english": "Enduring", "definition": "lasting over time or bearing hardship" },
+            { "english": "Competitive", "definition": "eager to be more successful than others" },
+            { "english": "Assure", "definition": "to guarantee or promise something" },
+            { "english": "Despite", "definition": "in spite of, or regardless of" },
+            { "english": "Dreadful", "definition": "terrible, awful, or very bad" },
+            { "english": "Efficient", "definition": "performing a task with minimum waste" },
+            { "english": "Shrug", "definition": "to raise one's shoulders to show indifference" },
+            { "english": "Aggravate", "definition": "to make a problem worse or to annoy someone" },
+            { "english": "My own sake", "definition": "for one's own benefit or well-being" },
+            { "english": "Insistent", "definition": "demanding attention or continuing firmly" },
+            { "english": "Assume", "definition": "to suppose or take for granted" },
+            { "english": "Irritable", "definition": "easily annoyed or bad-tempered" },
+            { "english": "Strangely", "definition": "in an unusual or odd way" },
+            { "english": "Ecstatic", "definition": "feeling overwhelming happiness or joy" },
+            { "english": "Hastily", "definition": "quickly, or with excessive speed" },
+            { "english": "Urge", "definition": "to encourage or strongly recommend" },
+            { "english": "Impatient", "definition": "unable to wait calmly" }
         ];
 
 
@@ -306,15 +305,12 @@
         // --- OYUN AKIŞI FONKSİYONLARI ---
 
         function startGame() {
-            // Skoru sıfırla ve göstergeleri güncelle
             correctCount = 0;
             incorrectCount = 0;
             updateScoreDisplay();
 
-            // Tüm kelimeleri karıştırarak aktif listeye ata
             activeWordList = shuffleArray([...allWords]);
             
-            // Başlangıç ekranını gizle, oyun ekranını göster
             startScreen.style.display = 'none';
             gameContainer.style.display = 'block';
 
@@ -322,12 +318,10 @@
         }
 
         function loadNewWord() {
-            // Önceki geri bildirimleri temizle
             feedbackDiv.textContent = "";
             nextButton.style.display = 'none';
             optionsContainer.style.display = 'block';
             
-            // Buton sınıflarını ve engellemeyi temizle
             optionButtons.forEach(button => {
                 button.disabled = false;
                 button.classList.remove('correct', 'incorrect');
@@ -335,9 +329,9 @@
 
 
             if (activeWordList.length === 0) {
-                wordDisplay.textContent = "Tebrikler! Tüm 94 kelimeyi bitirdiniz.";
+                wordDisplay.textContent = "CONGRATULATIONS! TEST FINISHED.";
                 optionsContainer.style.display = 'none';
-                feedbackDiv.textContent = `Final Skorunuz: Doğru: ${correctCount} / Yanlış: ${incorrectCount}`;
+                feedbackDiv.textContent = `FINAL SCORE: Correct: ${correctCount} / Incorrect: ${incorrectCount}`;
                 return;
             }
 
@@ -345,21 +339,20 @@
             const randomIndex = Math.floor(Math.random() * activeWordList.length);
             currentWord = activeWordList[randomIndex];
             
-            currentCorrectAnswer = currentWord.turkish; 
+            // CEVAP ARTIK İNGİLİZCE TANIM
+            currentCorrectAnswer = currentWord.definition; 
             
-            // İngilizce kelimeyi küçük harfe çevirip ekrana basıyoruz
-            wordDisplay.textContent = currentWord.english.toLocaleLowerCase('en').replace(/ \(.+\)/g, ''); 
+            // İngilizce kelimeyi büyük harf yapıp ekrana basıyoruz
+            wordDisplay.textContent = currentWord.english.toUpperCase().replace(/ \(.+\)/g, ''); 
 
-            // Seçilen kelimeyi listeden çıkar (tekrar etmemesi için)
             activeWordList.splice(randomIndex, 1); 
 
-            // 2. Yanlış şıkları hazırla (4 adet)
-            const allTurkishMeanings = allWords.map(w => w.turkish);
+            // 2. Yanlış şıkları hazırla (4 adet) - Artık İngilizce Tanımlardan Seçiyoruz
+            const allDefinitions = allWords.map(w => w.definition);
             
-            // Doğru cevabı hariç tutarak yanlış cevapları seç
-            let wrongAnswers = allTurkishMeanings.filter(t => t !== currentCorrectAnswer);
+            let wrongAnswers = allDefinitions.filter(d => d !== currentCorrectAnswer);
             
-            // Rastgele 4 yanlış anlam seç
+            // Rastgele 4 yanlış tanım seç
             wrongAnswers = shuffleArray(wrongAnswers).slice(0, 4); 
 
             // 3. Şıkları oluştur ve karıştır
@@ -368,13 +361,13 @@
 
             // 4. Şıkları butona yerleştir
             optionButtons.forEach((button, index) => {
-                button.textContent = `${String.fromCharCode(65 + index)}) ${shuffledOptions[index]}`;
+                // Şıklar İngilizce olduğu için küçük harf kullanıyoruz
+                button.textContent = `${String.fromCharCode(65 + index)}) ${toEnglishLowerCase(shuffledOptions[index])}`; 
                 button.value = shuffledOptions[index];
             });
         }
 
         function checkAnswer(selectedMeaning) {
-            // Tüm butonları devre dışı bırak
             optionButtons.forEach(button => {
                 button.disabled = true;
             });
@@ -383,26 +376,24 @@
             const correctAnswerButton = Array.from(optionButtons).find(btn => btn.value === currentCorrectAnswer);
 
             if (selectedMeaning === currentCorrectAnswer) {
-                // Doğru cevap
                 correctCount++;
-                feedbackDiv.textContent = "✅ Doğru!";
+                feedbackDiv.textContent = "✅ Correct!";
                 if (selectedButton) {
                     selectedButton.classList.add('correct');
                 }
             } else {
-                // Yanlış cevap
                 incorrectCount++;
-                feedbackDiv.textContent = `❌ Yanlış! Doğru cevap: "${currentCorrectAnswer}" idi.`;
+                feedbackDiv.textContent = `❌ Incorrect! The correct definition was: "${currentCorrectAnswer}".`;
                 if (selectedButton) {
                     selectedButton.classList.add('incorrect');
                 }
-                // Doğru cevabı işaretle
                 if (correctAnswerButton) {
                     correctAnswerButton.classList.add('correct');
                 }
             }
             
             updateScoreDisplay();
+            nextButton.textContent = 'Next Word';
             nextButton.style.display = 'block';
         }
 
