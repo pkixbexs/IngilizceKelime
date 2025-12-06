@@ -130,7 +130,7 @@
         
         <div id="start-screen">
             <h2>İngilizce Kelime Testine Hoş Geldiniz!</h2>
-            <p>Toplam 60 kelime ile pratik yapmaya hazır mısınız?</p>
+            <p>Toplam **94** kelime ile pratik yapmaya hazırsınız.</p>
             <div id="initial-score-display">
                 <span style="color: #4caf50;">✅ Doğru: 0</span>
                 <span style="color: #f44336;">❌ Yanlış: 0</span>
@@ -166,8 +166,9 @@
             return text.toLocaleLowerCase('tr');
         }
 
-        // --- KELİME LİSTESİ: TÜM 60 KELİME ---
+        // --- KELİME LİSTESİ: TÜM 94 KELİME ---
         const allWords = [
+            // --- ESKİ 60 KELİME ---
             { "english": "Ordinary", "turkish": toTurkishLowerCase("sıradan") },
             { "english": "Quaint", "turkish": toTurkishLowerCase("ilginç, sevimli eski tarz") },
             { "english": "Outskirts", "turkish": toTurkishLowerCase("kenar mahalleler, şehrin dışı") },
@@ -227,7 +228,43 @@
             { "english": "Captivated", "turkish": toTurkishLowerCase("büyülenmiş") },
             { "english": "Encounter", "turkish": toTurkishLowerCase("karşılaşma") },
             { "english": "Cherished", "turkish": toTurkishLowerCase("değer verilen, çok sevilen") },
-            { "english": "Convinced", "turkish": toTurkishLowerCase("ikna olmuş") }
+            { "english": "Convinced", "turkish": toTurkishLowerCase("ikna olmuş") },
+
+            // --- YENİ 34 KELİME ---
+            { "english": "Curious", "turkish": toTurkishLowerCase("meraklı") },
+            { "english": "Properly", "turkish": toTurkishLowerCase("düzgünce") },
+            { "english": "Phone reception", "turkish": toTurkishLowerCase("telefon çekimi") },
+            { "english": "Mark", "turkish": toTurkishLowerCase("işaret") },
+            { "english": "Civilization", "turkish": toTurkishLowerCase("medeniyet") },
+            { "english": "Venture out", "turkish": toTurkishLowerCase("dışarı çıkmak, macera atılmak") },
+            { "english": "To head", "turkish": toTurkishLowerCase("yönelmek, gitmek") },
+            { "english": "Set off", "turkish": toTurkishLowerCase("yola çıkmak, başlatmak") },
+            { "english": "Layout", "turkish": toTurkishLowerCase("düzen, yerleşim") },
+            { "english": "Approach", "turkish": toTurkishLowerCase("yaklaşım") },
+            { "english": "Dull", "turkish": toTurkishLowerCase("sıkıcı, donuk") },
+            { "english": "Dreary", "turkish": toTurkishLowerCase("kasvetli, iç karartıcı") },
+            { "english": "Branches", "turkish": toTurkishLowerCase("dallar") },
+            { "english": "Overgrown", "turkish": toTurkishLowerCase("aşırı büyümüş") },
+            { "english": "Greet", "turkish": toTurkishLowerCase("selamlamak") },
+            { "english": "Beckon", "turkish": toTurkishLowerCase("işaret etmek, çağırmak") },
+            { "english": "Run errands", "turkish": toTurkishLowerCase("ayak işlerini halletmek") },
+            { "english": "Enduring", "turkish": toTurkishLowerCase("dayanıklı, süregelen") },
+            { "english": "Competitive", "turkish": toTurkishLowerCase("rekabetçi") },
+            { "english": "Assure", "turkish": toTurkishLowerCase("temin etmek, garanti vermek") },
+            { "english": "Despite", "turkish": toTurkishLowerCase("rağmen") },
+            { "english": "Dreadful", "turkish": toTurkishLowerCase("korkunç, berbat") },
+            { "english": "Efficient", "turkish": toTurkishLowerCase("verimli") },
+            { "english": "Shrug", "turkish": toTurkishLowerCase("omuz silkmek") },
+            { "english": "Aggravate", "turkish": toTurkishLowerCase("kötüleştirmek, sinirlendirmek") },
+            { "english": "My own sake", "turkish": toTurkishLowerCase("kendi iyiliğim için") },
+            { "english": "Insistent", "turkish": toTurkishLowerCase("ısrarcı") },
+            { "english": "Assume", "turkish": toTurkishLowerCase("varsaymak, farz etmek") },
+            { "english": "Irritable", "turkish": toTurkishLowerCase("sinirli, çabuk sinirlenen") },
+            { "english": "Strangely", "turkish": toTurkishLowerCase("tuhaf bir şekilde") },
+            { "english": "Ecstatic", "turkish": toTurkishLowerCase("coşkulu, çok mutlu") },
+            { "english": "Hastily", "turkish": toTurkishLowerCase("aceleyle") },
+            { "english": "Urge", "turkish": toTurkishLowerCase("zorlamak, teşvik etmek") },
+            { "english": "Impatient", "turkish": toTurkishLowerCase("sabırsız") }
         ];
 
 
@@ -298,7 +335,7 @@
 
 
             if (activeWordList.length === 0) {
-                wordDisplay.textContent = "Tebrikler! Tüm 60 kelimeyi bitirdiniz.";
+                wordDisplay.textContent = "Tebrikler! Tüm 94 kelimeyi bitirdiniz.";
                 optionsContainer.style.display = 'none';
                 feedbackDiv.textContent = `Final Skorunuz: Doğru: ${correctCount} / Yanlış: ${incorrectCount}`;
                 return;
@@ -382,6 +419,4 @@
 
     </script>
 </body>
-
 </html>
-
