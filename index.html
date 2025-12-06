@@ -57,11 +57,18 @@
             font-weight: bold;
             margin-bottom: 15px;
             color: #ff9800;
+            display: flex; /* Sayaçları yan yana dizmek için */
+            justify-content: space-around;
         }
-        #score-display span {
-            margin: 0 10px;
+        /* Başlangıç ekranındaki sayaçlar için de aynı stili kullanabiliriz */
+        #initial-score-display {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-around;
         }
-
+        
         #word-display {
             font-size: 4em;
             font-weight: bold;
@@ -159,10 +166,11 @@
         
         <div id="start-screen">
             <h2>İngilizce Kelime Testine Hoş Geldiniz!</h2>
-            <p>Toplam 94 kelimelik bir test sizi bekliyor.</p>
+            <p>Toplam 94 kelimelik bir teste başlamak üzeresiniz.</p>
             <div id="initial-score-display">
                 <span style="color: #4caf50;">✅ Doğru: 0</span>
                 <span style="color: #f44336;">❌ Yanlış: 0</span>
+                <span id="initial-hint-display" style="color: #00bcd4;">💡 İpucu: 0</span>
             </div>
             <button id="start-button">OYUNU BAŞLAT</button>
         </div>
@@ -171,6 +179,7 @@
             <div id="score-display">
                 <span id="correct-score" style="color: #4caf50;">✅ Doğru: 0</span>
                 <span id="incorrect-score" style="color: #f44336;">❌ Yanlış: 0</span>
+                <span id="hint-count-display" style="color: #00bcd4;">💡 İpucu: 0</span>
             </div>
             
             <div id="word-display">WORD LOADING...</div>
@@ -196,7 +205,6 @@
             return text.toLowerCase();
         }
         
-        // Bu veriyi ipucu için kullanacağız
         function toTurkishLowerCase(text) {
             if (!text) return '';
             return text.toLocaleLowerCase('tr');
@@ -305,9 +313,10 @@
         let activeWordList = [];
         let currentWord = {};
         let currentCorrectAnswer = "";
-        let currentTurkishMeaning = ""; // İpucu için Türkçe anlamı tutar
+        let currentTurkishMeaning = ""; 
         let correctCount = 0;
         let incorrectCount = 0;
+        let hintCount = 0; // YENİ: İpucu sayacı
 
         const startScreen = document.getElementById('start-screen');
         const gameContainer = document.getElementById('game-container');
@@ -317,12 +326,15 @@
         const nextButton = document.getElementById('next-button');
         const optionButtons = optionsContainer.querySelectorAll('.option-button');
         const startButton = document.getElementById('start-button'); 
-        const hintButton = document.getElementById('hint-button'); // Yeni İpucu Butonu
-        const hintDisplay = document.getElementById('hint-display'); // Yeni İpucu Gösterim Alanı
+        const hintButton = document.getElementById('hint-button'); 
+        const hintDisplay = document.getElementById('hint-display'); 
         
         // Skor Sayaçları DOM Elementleri
         const correctScoreDisplay = document.getElementById('correct-score');
         const incorrectScoreDisplay = document.getElementById('incorrect-score');
+        const hintCountDisplay = document.getElementById('hint-count-display'); // YENİ
+        const initialHintDisplay = document.getElementById('initial-hint-display'); // YENİ
+        
 
         // --- YARDIMCI FONKSİYONLAR ---
 
@@ -337,13 +349,25 @@
         function updateScoreDisplay() {
             correctScoreDisplay.textContent = `✅ Doğru: ${correctCount}`;
             incorrectScoreDisplay.textContent = `❌ Yanlış: ${incorrectCount}`;
+            // YENİ: İpucu sayacını güncelle
+            if (hintCountDisplay) { 
+                 hintCountDisplay.textContent = `💡 İpucu: ${hintCount}`;
+            }
+            if (initialHintDisplay) {
+                initialHintDisplay.textContent = `💡 İpucu: ${hintCount}`;
+            }
         }
         
         function showHint() {
-            // İpucunu göster
-            hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
-            // İpucu bir kere kullanılabilsin diye butonu devre dışı bırak
-            hintButton.disabled = true;
+            // İpucu butonu devre dışı değilse (yani bu kelime için ilk kullanım ise)
+            if (!hintButton.disabled) { 
+                hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
+                hintButton.disabled = true;
+                
+                // YENİ: Sayacı artır ve gösterimi güncelle
+                hintCount++; 
+                updateScoreDisplay();
+            }
         }
 
 
@@ -352,6 +376,7 @@
         function startGame() {
             correctCount = 0;
             incorrectCount = 0;
+            hintCount = 0; // YENİ: Sayacı sıfırla
             updateScoreDisplay();
 
             activeWordList = shuffleArray([...allWords]);
@@ -370,7 +395,7 @@
             // İpucu butonunu sıfırla
             hintDisplay.textContent = "";
             hintButton.disabled = false;
-            hintButton.style.display = 'block'; // Yeni kelimede butonu tekrar göster
+            hintButton.style.display = 'block'; 
             
             optionButtons.forEach(button => {
                 button.disabled = false;
@@ -382,7 +407,8 @@
                 wordDisplay.textContent = "CONGRATULATIONS! TEST FINISHED.";
                 optionsContainer.style.display = 'none';
                 hintButton.style.display = 'none';
-                feedbackDiv.textContent = `FINAL SCORE: Correct: ${correctCount} / Incorrect: ${incorrectCount}`;
+                // YENİ: Final skoruna ipucu sayacını ekle
+                feedbackDiv.textContent = `FINAL SCORE: Correct: ${correctCount} / Incorrect: ${incorrectCount} / Hints Used: ${hintCount}`;
                 return;
             }
 
@@ -391,19 +417,17 @@
             currentWord = activeWordList[randomIndex];
             
             currentCorrectAnswer = currentWord.definition; 
-            currentTurkishMeaning = currentWord.turkish; // Türkçe anlamı ipucu için sakla
+            currentTurkishMeaning = currentWord.turkish; 
             
-            // İngilizce kelimeyi büyük harf yapıp ekrana basıyoruz
             wordDisplay.textContent = currentWord.english.toUpperCase().replace(/ \(.+\)/g, ''); 
 
             activeWordList.splice(randomIndex, 1); 
 
-            // 2. Yanlış şıkları hazırla (4 adet) - İngilizce Tanımlardan Seçiyoruz
+            // 2. Yanlış şıkları hazırla (4 adet)
             const allDefinitions = allWords.map(w => w.definition);
             
             let wrongAnswers = allDefinitions.filter(d => d !== currentCorrectAnswer);
             
-            // Rastgele 4 yanlış tanım seç
             wrongAnswers = shuffleArray(wrongAnswers).slice(0, 4); 
 
             // 3. Şıkları oluştur ve karıştır
@@ -412,7 +436,6 @@
 
             // 4. Şıkları butona yerleştir
             optionButtons.forEach((button, index) => {
-                // Şıklar İngilizce olduğu için küçük harf kullanıyoruz
                 button.textContent = `${String.fromCharCode(65 + index)}) ${toEnglishLowerCase(shuffledOptions[index])}`; 
                 button.value = shuffledOptions[index];
             });
@@ -445,7 +468,7 @@
                 }
             }
             
-            // Yanlış bilindiğinde veya ipucu kullanılmadığında Türkçe anlamı geri bildirim olarak göster (isteğe bağlı, ama faydalı)
+            // Yanlış bilindiğinde veya ipucu kullanılmadığında Türkçe anlamı geri bildirim olarak göster
             if (selectedMeaning !== currentCorrectAnswer && hintDisplay.textContent === "") {
                  hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
             }
@@ -457,7 +480,7 @@
 
         // --- EVENT DİNLEYİCİLERİ ---
         startButton.addEventListener('click', startGame); 
-        hintButton.addEventListener('click', showHint); // Yeni ipucu dinleyicisi
+        hintButton.addEventListener('click', showHint); 
 
         optionButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -470,4 +493,3 @@
     </script>
 </body>
 </html>
-
