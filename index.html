@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İngilizce Kelime Oyunu</title>
+    <title>İngilizce Kelime Oyunu (B1-B2 Tanımlı)</title>
     
     <style>
         /* Siyah Tema CSS Stil Ayarları */
@@ -108,6 +108,27 @@
             min-height: 30px;
         }
 
+        /* İpucu Butonu Stili */
+        #hint-button {
+            background-color: #00bcd4; 
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        #hint-button:hover:not(:disabled) {
+            background-color: #00a0b0;
+        }
+        #hint-button:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+        
         #next-button {
             background-color: #ff9800;
             color: black;
@@ -123,6 +144,13 @@
         #next-button:hover {
             background-color: #e68a00;
         }
+        
+        #hint-display {
+            color: #00bcd4; 
+            font-size: 1.1em; 
+            margin-top: 10px; 
+            min-height: 25px;
+        }
     </style>
 </head>
 <body>
@@ -130,8 +158,8 @@
     <div id="app-container">
         
         <div id="start-screen">
-            <h2>1. ve 2. Hikaye Kelime Testine Hoş Geldiniz!</h2>
-            <p>Toplam 94 kelimelik bir teste girmek üzeresiniz.</p>
+            <h2>İngilizce Tanım Testine Hoş Geldiniz!</h2>
+            <p>Toplam **94** İngilizce kelimenin B1-B2 seviyesindeki tanımını bulmaya çalışacaksınız.</p>
             <div id="initial-score-display">
                 <span style="color: #4caf50;">✅ Doğru: 0</span>
                 <span style="color: #f44336;">❌ Yanlış: 0</span>
@@ -155,6 +183,8 @@
                 <button class="option-button" data-key="E"></button>
             </div>
 
+            <button id="hint-button">💡 İpucu Göster</button>
+            <div id="hint-display"></div>
             <div id="feedback"></div>
             <button id="next-button" style="display:none;">Next Word</button>
         </div>
@@ -165,103 +195,109 @@
             if (!text) return '';
             return text.toLowerCase();
         }
+        
+        // Bu veriyi ipucu için kullanacağız
+        function toTurkishLowerCase(text) {
+            if (!text) return '';
+            return text.toLocaleLowerCase('tr');
+        }
 
-        // --- KELİME LİSTESİ: TÜM 94 KELİME VE B1-B2 SEVİYESİNDEKİ İNGİLİZCE TANIMLARI ---
+        // --- KELİME LİSTESİ: TÜM 94 KELİME (DEFINITION VE TURKISH) ---
         const allWords = [
-            { "english": "Ordinary", "definition": "normal, usual, or happening most of the time" },
-            { "english": "Quaint", "definition": "attractive in an unusual or old-fashioned way" },
-            { "english": "Outskirts", "definition": "the areas of a town or city that are furthest from the center" },
-            { "english": "Immersing", "definition": "becoming completely involved in something, or putting something into a liquid" },
-            { "english": "Fixing up", "definition": "repairing or improving a building or piece of furniture" },
-            { "english": "Relatively", "definition": "when compared to something else; quite or somewhat" },
-            { "english": "Uneventful", "definition": "nothing interesting, exciting, or unusual happened" },
-            { "english": "Hurdle", "definition": "a problem or difficulty that you must deal with" },
-            { "english": "Encountered", "definition": "experienced, or met someone unexpectedly" },
-            { "english": "Draughty (Drafty)", "definition": "having cold air current blowing through a room" },
-            { "english": "Crisp", "definition": "fresh, clean, and cool; or pleasantly hard and dry" },
-            { "english": "Weird", "definition": "very strange and unusual, often in a disturbing way" },
-            { "english": "Erratically", "definition": "in an unpredictable or inconsistent way" },
-            { "english": "Curiosity", "definition": "a strong desire to know or learn something" },
-            { "english": "Staring at", "definition": "looking fixedly at someone or something for a long time" },
-            { "english": "Phenomenon", "definition": "a fact or event that exists and can be seen, but is unusual or difficult to understand" },
-            { "english": "Blend in", "definition": "to look or seem the same as the surrounding people or things" },
-            { "english": "Abducted", "definition": "taken away illegally, especially using force" },
-            { "english": "Aliens", "definition": "imaginary creatures from outer space" },
-            { "english": "Spin", "definition": "to turn around quickly, or to cause something to turn" },
-            { "english": "Humanoid", "definition": "having a physical appearance resembling a human being" },
-            { "english": "Elongated", "definition": "made longer or stretched out" },
-            { "english": "Limbs", "definition": "a person's or animal's arms and legs" },
-            { "english": "Bluish", "definition": "having a slightly blue color" },
-            { "english": "Eerie", "definition": "strange, frightening, and mysterious" },
-            { "english": "Grace", "definition": "a smooth and elegant way of moving" },
-            { "english": "Approached", "definition": "came nearer to someone or something in distance or time" },
-            { "english": "Forehead", "definition": "the area of the face above the eyes and below the hair" },
-            { "english": "Echo", "definition": "a sound that is reflected back to the listener from a distance" },
-            { "english": "Glance", "definition": "to look quickly and briefly" },
-            { "english": "Mutter", "definition": "to speak quietly in an unclear way, usually showing annoyance" },
-            { "english": "Telepathically", "definition": "communicating thoughts directly to someone else's mind" },
-            { "english": "Subside", "definition": "to become less intense, severe, or violent" },
-            { "english": "Renew", "definition": "to start something again or replace something old" },
-            { "english": "Overwhelming", "definition": "difficult to fight against or deal with; very great in amount" }, 
-            { "english": "Surged into", "definition": "moved very quickly and suddenly in a particular direction" }, 
-            { "english": "Snooker", "definition": "a game played on a table using cues and colored balls" },
-            { "english": "Consent", "definition": "permission or agreement to do something" },
-            { "english": "Impeccable", "definition": "perfect, with no mistakes or faults" },
-            { "english": "Precision", "definition": "the quality of being exact and accurate" },
-            { "english": "Initial", "definition": "happening at the beginning; first" },
-            { "english": "Probe", "definition": "to try to discover information or examine something thoroughly" },
-            { "english": "Nod", "definition": "to move your head down and up, especially to show agreement" },
-            { "english": "Confer", "definition": "to discuss something with someone to make a decision" },
-            { "english": "Indicates", "definition": "shows or suggests something is true" },
-            { "english": "Chuckling", "definition": "laughing quietly to yourself" },
-            { "english": "Unblinking", "definition": "looking steadily without closing the eyes" },
-            { "english": "Respond", "definition": "to say or do something as an answer or reaction" },
-            { "english": "Interstellar", "definition": "between the stars or concerned with travel between stars" },
-            { "english": "Kidnapped", "definition": "illegally taken away and held as a prisoner" },
-            { "english": "Wisdom", "definition": "the ability to use knowledge and experience to make good decisions" },
-            { "english": "Insistence", "definition": "the act of demanding that something should happen" },
-            { "english": "Intact", "definition": "complete and not damaged; untouched" },
-            { "english": "Enhanced", "definition": "improved or increased in quality or value" },
-            { "english": "Fizzing with", "definition": "full of energy and excitement; bubbling with activity" },
-            { "english": "Resumed", "definition": "started again after a pause or break" },
-            { "english": "Captivated", "definition": "strongly attracted and interested; charmed or fascinated" },
-            { "english": "Encounter", "definition": "a meeting, especially one that is unexpected" },
-            { "english": "Cherished", "definition": "loved and cared for very much; highly valued" },
-            { "english": "Convinced", "definition": "completely sure about something; persuaded" },
-            { "english": "Curious", "definition": "having a strong desire to find out about something" },
-            { "english": "Properly", "definition": "in a correct or satisfactory way" },
-            { "english": "Phone reception", "definition": "the quality or strength of the signal for a mobile phone" },
-            { "english": "Mark", "definition": "a visible sign or impression; a written symbol" },
-            { "english": "Civilization", "definition": "human society with its developed culture and organization" },
-            { "english": "Venture out", "definition": "to leave a safe place, often taking a risk" },
-            { "english": "To head", "definition": "to move or travel in a particular direction" },
-            { "english": "Set off", "definition": "to begin a journey or start an alarm" },
-            { "english": "Layout", "definition": "the way in which something is arranged or designed" },
-            { "english": "Approach", "definition": "a way of dealing with or thinking about a problem or task" },
-            { "english": "Dull", "definition": "not exciting or interesting; boring" },
-            { "english": "Dreary", "definition": "causing sadness or gloom; dull and depressing" },
-            { "english": "Branches", "definition": "a section of a system" },
-            { "english": "Overgrown", "definition": "covered with too many plants that have not been controlled" },
-            { "english": "Greet", "definition": "to welcome or address someone in a friendly way" },
-            { "english": "Beckon", "definition": "to signal someone to come nearer, usually by a movement of the head or hand" },
-            { "english": "Run errands", "definition": "to make a short trip to do a specific task, often for someone else" },
-            { "english": "Enduring", "definition": "lasting for a long time; able to survive hardship" },
-            { "english": "Competitive", "definition": "trying hard to be more successful than others" },
-            { "english": "Assure", "definition": "to tell someone something confidently to remove doubt" },
-            { "english": "Despite", "definition": "without being affected by; in spite of" },
-            { "english": "Dreadful", "definition": "extremely bad or unpleasant; causing fear or terror" },
-            { "english": "Efficient", "definition": "working well without wasting time or energy" },
-            { "english": "Shrug", "definition": "to raise your shoulders briefly to show you don't know or don't care" },
-            { "english": "Aggravate", "definition": "to make a bad situation or injury worse; to annoy someone" },
-            { "english": "My own sake", "definition": "for one's own benefit, advantage, or well-being" },
-            { "english": "Insistent", "definition": "demanding strongly that something happens; persistent" },
-            { "english": "Assume", "definition": "to believe something is true without having proof" },
-            { "english": "Irritable", "definition": "getting easily annoyed or made angry" },
-            { "english": "Strangely", "definition": "in an unusual or surprising way" },
-            { "english": "Ecstatic", "definition": "feeling extremely happy and excited" },
-            { "english": "Hastily", "definition": "done quickly, often without careful thought" },
-            { "english": "Urge", "definition": "to encourage or strongly recommend that someone does something" },
-            { "english": "Impatient", "definition": "annoyed by people who are slow or by things that take a long time" }
+            { "english": "Ordinary", "definition": "normal, usual, or happening most of the time", "turkish": toTurkishLowerCase("sıradan") },
+            { "english": "Quaint", "definition": "attractive in an unusual or old-fashioned way", "turkish": toTurkishLowerCase("ilginç, sevimli eski tarz") },
+            { "english": "Outskirts", "definition": "the areas of a town or city that are furthest from the center", "turkish": toTurkishLowerCase("kenar mahalleler, şehrin dışı") },
+            { "english": "Immersing", "definition": "becoming completely involved in something, or putting something into a liquid", "turkish": toTurkishLowerCase("dalmak, kendini kaptırmak") },
+            { "english": "Fixing up", "definition": "repairing or improving a building or piece of furniture", "turkish": toTurkishLowerCase("tamir etme, toparlama") },
+            { "english": "Relatively", "definition": "when compared to something else; quite or somewhat", "turkish": toTurkishLowerCase("nispeten") },
+            { "english": "Uneventful", "definition": "nothing interesting, exciting, or unusual happened", "turkish": toTurkishLowerCase("olaysız, sakin") },
+            { "english": "Hurdle", "definition": "a problem or difficulty that you must deal with", "turkish": toTurkishLowerCase("engel") },
+            { "english": "Encountered", "definition": "experienced, or met someone unexpectedly", "turkish": toTurkishLowerCase("karşılaştı") },
+            { "english": "Draughty (Drafty)", "definition": "having cold air current blowing through a room", "turkish": toTurkishLowerCase("cereyan yapan") },
+            { "english": "Crisp", "definition": "fresh, clean, and cool; or pleasantly hard and dry", "turkish": toTurkishLowerCase("serin/ferah; gevrek") },
+            { "english": "Weird", "definition": "very strange and unusual, often in a disturbing way", "turkish": toTurkishLowerCase("tuhaf") },
+            { "english": "Erratically", "definition": "in an unpredictable or inconsistent way", "turkish": toTurkishLowerCase("düzensizce") },
+            { "english": "Curiosity", "definition": "a strong desire to know or learn something", "turkish": toTurkishLowerCase("merak") },
+            { "english": "Staring at", "definition": "looking fixedly at someone or something for a long time", "turkish": toTurkishLowerCase("dik dik bakmak") },
+            { "english": "Phenomenon", "definition": "a fact or event that exists and can be seen, but is unusual or difficult to understand", "turkish": toTurkishLowerCase("olgu, fenomen") },
+            { "english": "Blend in", "definition": "to look or seem the same as the surrounding people or things", "turkish": toTurkishLowerCase("uyum sağlamak") },
+            { "english": "Abducted", "definition": "taken away illegally, especially using force", "turkish": toTurkishLowerCase("kaçırıldı") },
+            { "english": "Aliens", "definition": "imaginary creatures from outer space", "turkish": toTurkishLowerCase("uzaylılar") },
+            { "english": "Spin", "definition": "to turn around quickly, or to cause something to turn", "turkish": toTurkishLowerCase("dönmek") },
+            { "english": "Humanoid", "definition": "having a physical appearance resembling a human being", "turkish": toTurkishLowerCase("insansı") },
+            { "english": "Elongated", "definition": "made longer or stretched out", "turkish": toTurkishLowerCase("uzamış") },
+            { "english": "Limbs", "definition": "a person's or animal's arms and legs", "turkish": toTurkishLowerCase("uzuvlar") },
+            { "english": "Bluish", "definition": "having a slightly blue color", "turkish": toTurkishLowerCase("mavimsi") },
+            { "english": "Eerie", "definition": "strange, frightening, and mysterious", "turkish": toTurkishLowerCase("ürkütücü") },
+            { "english": "Grace", "definition": "a smooth and elegant way of moving", "turkish": toTurkishLowerCase("zarafet") },
+            { "english": "Approached", "definition": "came nearer to someone or something in distance or time", "turkish": toTurkishLowerCase("yaklaştı") },
+            { "english": "Forehead", "definition": "the area of the face above the eyes and below the hair", "turkish": toTurkishLowerCase("alın") },
+            { "english": "Echo", "definition": "a sound that is reflected back to the listener from a distance", "turkish": toTurkishLowerCase("yankı") },
+            { "english": "Glance", "definition": "to look quickly and briefly", "turkish": toTurkishLowerCase("hızlı bakış") },
+            { "english": "Mutter", "definition": "to speak quietly in an unclear way, usually showing annoyance", "turkish": toTurkishLowerCase("mırıldanmak") },
+            { "english": "Telepathically", "definition": "communicating thoughts directly to someone else's mind", "turkish": toTurkishLowerCase("telepatik olarak") },
+            { "english": "Subside", "definition": "to become less intense, severe, or violent", "turkish": toTurkishLowerCase("yatışmak") },
+            { "english": "Renew", "definition": "to start something again or replace something old", "turkish": toTurkishLowerCase("yenilemek") },
+            { "english": "Overwhelming", "definition": "difficult to fight against or deal with; very great in amount", "turkish": toTurkishLowerCase("bunaltıcı") }, 
+            { "english": "Surged into", "definition": "moved very quickly and suddenly in a particular direction", "turkish": toTurkishLowerCase("içine doğru aktı") }, 
+            { "english": "Snooker", "definition": "a game played on a table using cues and colored balls", "turkish": toTurkishLowerCase("snooker (bilardo türü)") },
+            { "english": "Consent", "definition": "permission or agreement to do something", "turkish": toTurkishLowerCase("onay, rıza") },
+            { "english": "Impeccable", "definition": "perfect, with no mistakes or faults", "turkish": toTurkishLowerCase("kusursuz") },
+            { "english": "Precision", "definition": "the quality of being exact and accurate", "turkish": toTurkishLowerCase("hassasiyet") },
+            { "english": "Initial", "definition": "happening at the beginning; first", "turkish": toTurkishLowerCase("ilk, başlangıç") },
+            { "english": "Probe", "definition": "to try to discover information or examine something thoroughly", "turkish": toTurkishLowerCase("incelemek") },
+            { "english": "Nod", "definition": "to move your head down and up, especially to show agreement", "turkish": toTurkishLowerCase("başını sallamak") },
+            { "english": "Confer", "definition": "to discuss something with someone to make a decision", "turkish": toTurkishLowerCase("görüşmek, danışmak") },
+            { "english": "Indicates", "definition": "shows or suggests something is true", "turkish": toTurkishLowerCase("gösterir") },
+            { "english": "Chuckling", "definition": "laughing quietly to yourself", "turkish": toTurkishLowerCase("kıkırdama") },
+            { "english": "Unblinking", "definition": "looking steadily without closing the eyes", "turkish": toTurkishLowerCase("gözünü kırpmadan") },
+            { "english": "Respond", "definition": "to say or do something as an answer or reaction", "turkish": toTurkishLowerCase("cevap vermek") },
+            { "english": "Interstellar", "definition": "between the stars or concerned with travel between stars", "turkish": toTurkishLowerCase("yıldızlararası") },
+            { "english": "Kidnapped", "definition": "illegally taken away and held as a prisoner", "turkish": toTurkishLowerCase("kaçırıldı") },
+            { "english": "Wisdom", "definition": "the ability to use knowledge and experience to make good decisions", "turkish": toTurkishLowerCase("bilgelik") },
+            { "english": "Insistence", "definition": "the act of demanding that something should happen", "turkish": toTurkishLowerCase("ısrar") },
+            { "english": "Intact", "definition": "complete and not damaged; untouched", "turkish": toTurkishLowerCase("sağlam, bozulmamış") },
+            { "english": "Enhanced", "definition": "improved or increased in quality or value", "turkish": toTurkishLowerCase("geliştirilmiş") },
+            { "english": "Fizzing with", "definition": "full of energy and excitement; bubbling with activity", "turkish": toTurkishLowerCase("enerji dolu") },
+            { "english": "Resumed", "definition": "started again after a pause or break", "turkish": toTurkishLowerCase("devam etti") },
+            { "english": "Captivated", "definition": "strongly attracted and interested; charmed or fascinated", "turkish": toTurkishLowerCase("büyülenmiş") },
+            { "english": "Encounter", "definition": "a meeting, especially one that is unexpected", "turkish": toTurkishLowerCase("karşılaşma") },
+            { "english": "Cherished", "definition": "loved and cared for very much; highly valued", "turkish": toTurkishLowerCase("değer verilen, çok sevilen") },
+            { "english": "Convinced", "definition": "completely sure about something; persuaded", "turkish": toTurkishLowerCase("ikna olmuş") },
+            { "english": "Curious", "definition": "having a strong desire to find out about something", "turkish": toTurkishLowerCase("meraklı") },
+            { "english": "Properly", "definition": "in a correct or satisfactory way", "turkish": toTurkishLowerCase("düzgünce") },
+            { "english": "Phone reception", "definition": "the quality or strength of the signal for a mobile phone", "turkish": toTurkishLowerCase("telefon çekimi") },
+            { "english": "Mark", "definition": "a visible sign or impression; a written symbol", "turkish": toTurkishLowerCase("işaret") },
+            { "english": "Civilization", "definition": "human society with its developed culture and organization", "turkish": toTurkishLowerCase("medeniyet") },
+            { "english": "Venture out", "definition": "to leave a safe place, often taking a risk", "turkish": toTurkishLowerCase("dışarı çıkmak, macera atılmak") },
+            { "english": "To head", "definition": "to move or travel in a particular direction", "turkish": toTurkishLowerCase("yönelmek, gitmek") },
+            { "english": "Set off", "definition": "to begin a journey or start an alarm", "turkish": toTurkishLowerCase("yola çıkmak, başlatmak") },
+            { "english": "Layout", "definition": "the way in which something is arranged or designed", "turkish": toTurkishLowerCase("düzen, yerleşim") },
+            { "english": "Approach", "definition": "a way of dealing with or thinking about a problem or task", "turkish": toTurkishLowerCase("yaklaşım") },
+            { "english": "Dull", "definition": "not exciting or interesting; boring", "turkish": toTurkishLowerCase("sıkıcı, donuk") },
+            { "english": "Dreary", "definition": "causing sadness or gloom; dull and depressing", "turkish": toTurkishLowerCase("kasvetli, iç karartıcı") },
+            { "english": "Branches", "definition": "parts of a tree growing out from the trunk; a section of a system", "turkish": toTurkishLowerCase("dallar") },
+            { "english": "Overgrown", "definition": "covered with too many plants that have not been controlled", "turkish": toTurkishLowerCase("aşırı büyümüş") },
+            { "english": "Greet", "definition": "to welcome or address someone in a friendly way", "turkish": toTurkishLowerCase("selamlamak") },
+            { "english": "Beckon", "definition": "to signal someone to come nearer, usually by a movement of the head or hand", "turkish": toTurkishLowerCase("işaret etmek, çağırmak") },
+            { "english": "Run errands", "definition": "to make a short trip to do a specific task, often for someone else", "turkish": toTurkishLowerCase("ayak işlerini halletmek") },
+            { "english": "Enduring", "definition": "lasting for a long time; able to survive hardship", "turkish": toTurkishLowerCase("dayanıklı, süregelen") },
+            { "english": "Competitive", "definition": "trying hard to be more successful than others", "turkish": toTurkishLowerCase("rekabetçi") },
+            { "english": "Assure", "definition": "to tell someone something confidently to remove doubt", "turkish": toTurkishLowerCase("temin etmek, garanti vermek") },
+            { "english": "Despite", "definition": "without being affected by; in spite of", "turkish": toTurkishLowerCase("rağmen") },
+            { "english": "Dreadful", "definition": "extremely bad or unpleasant; causing fear or terror", "turkish": toTurkishLowerCase("korkunç, berbat") },
+            { "english": "Efficient", "definition": "working well without wasting time or energy", "turkish": toTurkishLowerCase("verimli") },
+            { "english": "Shrug", "definition": "to raise your shoulders briefly to show you don't know or don't care", "turkish": toTurkishLowerCase("omuz silkmek") },
+            { "english": "Aggravate", "definition": "to make a bad situation or injury worse; to annoy someone", "turkish": toTurkishLowerCase("kötüleştirmek, sinirlendirmek") },
+            { "english": "My own sake", "definition": "for one's own benefit, advantage, or well-being", "turkish": toTurkishLowerCase("kendi iyiliğim için") },
+            { "english": "Insistent", "definition": "demanding strongly that something happens; persistent", "turkish": toTurkishLowerCase("ısrarcı") },
+            { "english": "Assume", "definition": "to believe something is true without having proof", "turkish": toTurkishLowerCase("varsaymak, farz etmek") },
+            { "english": "Irritable", "definition": "getting easily annoyed or made angry", "turkish": toTurkishLowerCase("sinirli, çabuk sinirlenen") },
+            { "english": "Strangely", "definition": "in an unusual or surprising way", "turkish": toTurkishLowerCase("tuhaf bir şekilde") },
+            { "english": "Ecstatic", "definition": "feeling extremely happy and excited", "turkish": toTurkishLowerCase("coşkulu, çok mutlu") },
+            { "english": "Hastily", "definition": "done quickly, often without careful thought", "turkish": toTurkishLowerCase("aceleyle") },
+            { "english": "Urge", "definition": "to encourage or strongly recommend that someone does something", "turkish": toTurkishLowerCase("zorlamak, teşvik etmek") },
+            { "english": "Impatient", "definition": "annoyed by people who are slow or by things that take a long time", "turkish": toTurkishLowerCase("sabırsız") }
         ];
 
 
@@ -269,6 +305,7 @@
         let activeWordList = [];
         let currentWord = {};
         let currentCorrectAnswer = "";
+        let currentTurkishMeaning = ""; // İpucu için Türkçe anlamı tutar
         let correctCount = 0;
         let incorrectCount = 0;
 
@@ -280,6 +317,8 @@
         const nextButton = document.getElementById('next-button');
         const optionButtons = optionsContainer.querySelectorAll('.option-button');
         const startButton = document.getElementById('start-button'); 
+        const hintButton = document.getElementById('hint-button'); // Yeni İpucu Butonu
+        const hintDisplay = document.getElementById('hint-display'); // Yeni İpucu Gösterim Alanı
         
         // Skor Sayaçları DOM Elementleri
         const correctScoreDisplay = document.getElementById('correct-score');
@@ -299,6 +338,14 @@
             correctScoreDisplay.textContent = `✅ Doğru: ${correctCount}`;
             incorrectScoreDisplay.textContent = `❌ Yanlış: ${incorrectCount}`;
         }
+        
+        function showHint() {
+            // İpucunu göster
+            hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
+            // İpucu bir kere kullanılabilsin diye butonu devre dışı bırak
+            hintButton.disabled = true;
+        }
+
 
         // --- OYUN AKIŞI FONKSİYONLARI ---
 
@@ -320,6 +367,11 @@
             nextButton.style.display = 'none';
             optionsContainer.style.display = 'block';
             
+            // İpucu butonunu sıfırla
+            hintDisplay.textContent = "";
+            hintButton.disabled = false;
+            hintButton.style.display = 'block'; // Yeni kelimede butonu tekrar göster
+            
             optionButtons.forEach(button => {
                 button.disabled = false;
                 button.classList.remove('correct', 'incorrect');
@@ -329,6 +381,7 @@
             if (activeWordList.length === 0) {
                 wordDisplay.textContent = "CONGRATULATIONS! TEST FINISHED.";
                 optionsContainer.style.display = 'none';
+                hintButton.style.display = 'none';
                 feedbackDiv.textContent = `FINAL SCORE: Correct: ${correctCount} / Incorrect: ${incorrectCount}`;
                 return;
             }
@@ -338,6 +391,7 @@
             currentWord = activeWordList[randomIndex];
             
             currentCorrectAnswer = currentWord.definition; 
+            currentTurkishMeaning = currentWord.turkish; // Türkçe anlamı ipucu için sakla
             
             // İngilizce kelimeyi büyük harf yapıp ekrana basıyoruz
             wordDisplay.textContent = currentWord.english.toUpperCase().replace(/ \(.+\)/g, ''); 
@@ -365,9 +419,11 @@
         }
 
         function checkAnswer(selectedMeaning) {
+            // Cevap verildikten sonra hem şıkları hem de ipucu butonunu devre dışı bırak
             optionButtons.forEach(button => {
                 button.disabled = true;
             });
+            hintButton.disabled = true;
             
             const selectedButton = Array.from(optionButtons).find(btn => btn.value === selectedMeaning);
             const correctAnswerButton = Array.from(optionButtons).find(btn => btn.value === currentCorrectAnswer);
@@ -389,6 +445,11 @@
                 }
             }
             
+            // Yanlış bilindiğinde veya ipucu kullanılmadığında Türkçe anlamı geri bildirim olarak göster (isteğe bağlı, ama faydalı)
+            if (selectedMeaning !== currentCorrectAnswer && hintDisplay.textContent === "") {
+                 hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
+            }
+
             updateScoreDisplay();
             nextButton.textContent = 'Next Word';
             nextButton.style.display = 'block';
@@ -396,6 +457,7 @@
 
         // --- EVENT DİNLEYİCİLERİ ---
         startButton.addEventListener('click', startGame); 
+        hintButton.addEventListener('click', showHint); // Yeni ipucu dinleyicisi
 
         optionButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -408,8 +470,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
