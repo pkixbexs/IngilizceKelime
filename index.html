@@ -54,12 +54,16 @@
         }
 
         /* KELİME ÇALIŞMA butonu rengi */
-        #study-button, #back-to-start-button-study {
+        #study-button, #back-to-start-button-study, #toggle-meanings-button {
             background-color: #ff9800;
             color: black;
         }
-        #study-button:hover, #back-to-start-button-study:hover {
+        #study-button:hover, #back-to-start-button-study:hover, #toggle-meanings-button:hover {
             background-color: #e68a00;
+        }
+
+        #toggle-meanings-button {
+            margin-bottom: 15px;
         }
 
         /* Sayaç Stil Ayarı */
@@ -186,6 +190,21 @@
         .turkish-meaning {
             color: #00bcd4;
             flex-basis: 60%;
+            cursor: pointer; /* Tıklanabilir olduğunu gösterir */
+        }
+
+        /* Gizli Anlamlar Stili (Click-to-reveal için) */
+        .meaning-hidden {
+            color: transparent !important; /* Metni gizle */
+            background-color: #333333; /* Gizli olduğunu belirten arka plan */
+            border-radius: 4px;
+            padding: 0 5px;
+            user-select: none; /* Metnin seçilmesini engelle */
+            transition: background-color 0.1s;
+        }
+        
+        .meaning-hidden:hover {
+             background-color: #555555;
         }
     </style>
 </head>
@@ -208,6 +227,7 @@
         <div id="study-container" style="display:none;">
             <h2>Kelime Çalışma Bölümü (İngilizce - Türkçe)</h2>
             <p>Kelimeleri alfabetik sıraya göre görebilirsiniz.</p>
+            <button id="toggle-meanings-button" class="mode-button">ANLAMLARI GİZLE</button>
             <div id="word-list-table">
                 </div>
             <button id="back-to-start-button-study" class="mode-button">ANA EKRANA DÖN</button>
@@ -356,6 +376,9 @@
         let incorrectCount = 0;
         let hintCount = 0; 
 
+        // Çalışma Modu için yeni değişken
+        let areMeaningsHidden = false; 
+
         const startScreen = document.getElementById('start-screen');
         const gameContainer = document.getElementById('game-container');
         const studyContainer = document.getElementById('study-container'); 
@@ -370,6 +393,9 @@
         const studyButton = document.getElementById('study-button'); 
         const wordListTable = document.getElementById('word-list-table'); 
         const backToStartButtonStudy = document.getElementById('back-to-start-button-study'); 
+        // Yeni buton
+        const toggleMeaningsButton = document.getElementById('toggle-meanings-button'); 
+
         
         // Skor Sayaçları DOM Elementleri
         const correctScoreDisplay = document.getElementById('correct-score');
@@ -399,48 +425,90 @@
             }
         }
 
-        // Genel Ekran Gösterim Yöneticisi
         function showScreen(screenId) {
-            // Tüm ana ekranları gizle
             startScreen.style.display = 'none';
             gameContainer.style.display = 'none';
             studyContainer.style.display = 'none';
-
-            // İstenen ekranı göster
             document.getElementById(screenId).style.display = 'block';
         }
 
-        // Kelime Listesi Oluşturma
+        // Kelime Listesi Oluşturma (Güncellendi)
         function renderStudyList() {
-            // Eğer liste zaten oluşturulmuşsa (tekrar tekrar çağrılmasını önlemek için)
+            // Eğer liste zaten oluşturulmuşsa tekrar render etme
             if (wordListTable.innerHTML.trim() !== "") return;
             
             let htmlContent = '';
-            
-            // Kelimeleri İngilizceye göre sırala
             const sortedWords = [...allWords].sort((a, b) => a.english.localeCompare(b.english));
 
-            sortedWords.forEach(word => {
-                // İngilizce kelimenin parantez içindeki kısımları temizle (Drafty gibi)
+            sortedWords.forEach((word, index) => {
                 const cleanEnglish = word.english.toUpperCase().replace(/ \(.+\)/g, '');
+                
+                // data-meaning-text ile Türkçe anlamı saklıyoruz.
                 htmlContent += `
                     <div class="word-item">
                         <span class="english-word">${cleanEnglish}</span>
-                        <span class="turkish-meaning">${word.turkish.toUpperCase()}</span>
+                        <span class="turkish-meaning" data-meaning-text="${word.turkish.toUpperCase()}">
+                            ${word.turkish.toUpperCase()}
+                        </span>
                     </div>
                 `;
             });
             
             wordListTable.innerHTML = htmlContent;
+
+            // Anlam Gizleme/Gösterme olay dinleyicilerini ekle
+            wordListTable.querySelectorAll('.turkish-meaning').forEach(meaningSpan => {
+                meaningSpan.addEventListener('click', () => {
+                    if (areMeaningsHidden && meaningSpan.classList.contains('meaning-hidden')) {
+                        // Eğer anlamlar gizliyse ve bu anlam da gizlenmişse, tıklandığında sadece bu anlamı aç
+                        meaningSpan.textContent = meaningSpan.dataset.meaningText;
+                        meaningSpan.classList.remove('meaning-hidden');
+                        meaningSpan.style.cursor = 'default'; // Açıldıktan sonra imleci değiştir
+                    }
+                });
+            });
         }
+        
+        // Anlamları Gizle/Göster fonksiyonu (Yeni)
+        function toggleMeanings() {
+            areMeaningsHidden = !areMeaningsHidden;
+            const meaningSpans = wordListTable.querySelectorAll('.turkish-meaning');
+            
+            if (areMeaningsHidden) {
+                toggleMeaningsButton.textContent = 'ANLAMLARI GÖSTER';
+                meaningSpans.forEach(span => {
+                    span.classList.add('meaning-hidden');
+                    // Gizleme modunda iken placeholder metin koy
+                    span.textContent = 'Tıklayınca Açılır'; 
+                    span.style.cursor = 'pointer';
+                });
+            } else {
+                toggleMeaningsButton.textContent = 'ANLAMLARI GİZLE';
+                meaningSpans.forEach(span => {
+                    span.classList.remove('meaning-hidden');
+                    // Metni tekrar data attribute'ünden geri yükle
+                    span.textContent = span.dataset.meaningText;
+                    span.style.cursor = 'pointer';
+                });
+            }
+        }
+
 
         function showStartScreen() {
             showScreen('start-screen');
         }
 
         function showStudyMode() {
-            renderStudyList(); // Listeyi oluştur
-            showScreen('study-container'); // Çalışma ekranını göster
+            renderStudyList(); 
+            showScreen('study-container'); 
+            
+            // Çalışma ekranı açıldığında varsayılan olarak anlamları göster
+            areMeaningsHidden = false; 
+            toggleMeaningsButton.textContent = 'ANLAMLARI GİZLE';
+            wordListTable.querySelectorAll('.turkish-meaning').forEach(span => {
+                span.classList.remove('meaning-hidden');
+                span.textContent = span.dataset.meaningText;
+            });
         }
         
         function showHint() {
@@ -510,7 +578,7 @@
             const shuffledOptions = shuffleArray(allOptions);
 
             optionButtons.forEach((button, index) => {
-                button.textContent = `${String.fromCharCode(65 + index + 1)}) ${toEnglishLowerCase(shuffledOptions[index])}`; 
+                button.textContent = `${String.fromCharCode(65 + index)}) ${toEnglishLowerCase(shuffledOptions[index])}`; 
                 button.value = shuffledOptions[index];
             });
         }
@@ -554,8 +622,10 @@
         // --- EVENT DİNLEYİCİLERİ ---
         startButton.addEventListener('click', startGame); 
         hintButton.addEventListener('click', showHint); 
-        studyButton.addEventListener('click', showStudyMode); // Kelime Çalışma Moduna Git
-        backToStartButtonStudy.addEventListener('click', showStartScreen); // Geri Dön
+        studyButton.addEventListener('click', showStudyMode); 
+        backToStartButtonStudy.addEventListener('click', showStartScreen); 
+        // Yeni dinleyici
+        toggleMeaningsButton.addEventListener('click', toggleMeanings); 
 
         optionButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -565,9 +635,9 @@
 
         nextButton.addEventListener('click', loadNewWord);
 
-        // Başlangıçta skoru göster
+        // Başlangıçta skoru göster ve Ana Ekranı göster
         updateScoreDisplay();
-        showStartScreen(); // Uygulama başlangıcında Ana Ekranı göster
+        showStartScreen(); 
 
     </script>
 </body>
