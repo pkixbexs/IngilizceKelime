@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İngilizce Kelime Oyunu</title>
+    <title>İngilizce Kelime Testi (94 Kelime)</title>
     
     <style>
-        /* Siyah Tema CSS Stil Ayarları */
+        /* Siyah Tema ve Mobil Uyumlu CSS */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -16,82 +16,103 @@
             margin: 0;
             background-color: #000000;
             color: #ffffff;
+            padding: 10px; /* Ekran kenarlarında boşluk */
+            box-sizing: border-box;
         }
 
         #app-container {
             background: #1a1a1a;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
-            width: 90%;
-            max-width: 700px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.15);
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
+            max-height: 95vh; /* Dikeyde sığdırmak için */
+            display: flex;
+            flex-direction: column;
             text-align: center;
-        }
-
-        #start-screen h2, #study-container h2 {
-            color: #00bcd4;
-            margin-bottom: 20px;
+            overflow-y: auto; /* İçerik taşarsa kaydırma çubuğu */
         }
         
-        /* Mod Butonları (Genel) */
-        .mode-button {
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin: 10px 5px; /* Yatayda biraz boşluk */
-        }
-
-        /* Test Modu Butonları */
-        .test-mode-button { 
-            background-color: #4caf50; 
-            color: black;
-            margin-bottom: 10px;
-            width: calc(50% - 10px); /* İki butonu yan yana getirmek için */
-            display: inline-block;
-            box-sizing: border-box;
-            font-size: 0.9em; /* Küçük ekranlar için metni sığdır */
-        }
-        .test-mode-button:hover {
-            background-color: #45a049;
-        }
-
-        /* Kelime Çalışma Butonu */
-        #study-button, #back-to-start-button-study, #toggle-meanings-button {
-            background-color: #ff9800;
-            color: black;
-        }
-        #study-button:hover, #back-to-start-button-study:hover, #toggle-meanings-button:hover {
-            background-color: #e68a00;
-        }
-
-        #toggle-meanings-button {
+        h2 {
+            color: #4caf50;
+            margin-top: 5px;
             margin-bottom: 15px;
         }
 
-        /* Sayaç Stil Ayarı */
-        #score-display, #initial-score-display {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex; 
+        /* Başlangıç Ekranı */
+        #start-screen, #game-container, #study-container {
+            flex-grow: 1; /* Ekranı doldurmasını sağlar */
+        }
+        
+        #initial-score-display {
+            font-size: 1em;
+            margin-bottom: 20px;
+            display: flex;
             justify-content: space-around;
-            padding: 10px 0;
+            padding: 8px;
             background-color: #0d0d0d;
             border-radius: 6px;
         }
         
+        #test-mode-selection {
+            display: flex;
+            flex-wrap: wrap; /* Butonlar alta insin */
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .mode-button {
+            border: none;
+            padding: 12px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: calc(50% - 5px); /* İki butonu yan yana getir */
+            box-sizing: border-box;
+        }
+
+        .test-mode-button { 
+            background-color: #00bcd4; 
+            color: black;
+        }
+        .test-mode-button:hover {
+            background-color: #00a0b0;
+        }
+        
+        #study-button, #back-to-start-button-study, #toggle-meanings-button {
+            background-color: #ff9800;
+            color: black;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Oyun Alanı */
+        #score-display {
+            font-size: 1.1em;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            background-color: #0d0d0d;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
         #word-display {
-            font-size: 3em; /* Soruyu sığdırmak için küçültüldü */
+            font-size: 1.8em; 
             font-weight: bold;
             color: #4caf50;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
-            text-transform: uppercase; 
-            min-height: 1.2em;
+            margin-bottom: 25px;
+            min-height: 2.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
         }
 
         .option-button {
@@ -99,20 +120,20 @@
             color: #ffffff;
             border: 1px solid #444444;
             width: 100%;
-            padding: 15px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
             border-radius: 8px;
-            font-size: 1.1em;
+            font-size: 1em;
             text-align: left;
             cursor: pointer;
-            transition: background-color 0.15s, transform 0.1s;
+            transition: background-color 0.15s;
         }
 
         .option-button:hover:not(:disabled) {
             background-color: #555555;
         }
 
-        /* Geri Bildirim Renkleri */
+        /* Geri Bildirim ve İpucu Alanı */
         .option-button.correct {
             background-color: #4caf50 !important; 
             color: white;
@@ -123,52 +144,70 @@
             background-color: #f44336 !important; 
             color: white;
         }
-
-        #feedback {
-            margin-top: 20px;
-            font-size: 1.3em;
-            font-weight: bold;
-            min-height: 30px;
+        
+        #hint-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; /* Butonları aşağı hizala */
+            margin-top: 15px;
+            position: relative;
         }
 
-        /* İpucu Butonu Stili */
         #hint-button {
             background-color: #00bcd4; 
             color: black;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 0.9em;
             cursor: pointer;
-            margin-top: 15px;
             transition: background-color 0.3s;
             font-weight: bold;
+            flex-shrink: 0;
         }
-        #hint-button:hover:not(:disabled) {
-            background-color: #00a0b0;
-        }
-        #hint-button:disabled {
-            opacity: 0.5;
-            cursor: default;
-        }
-        
+
         #next-button {
             background-color: #ff9800;
             color: black;
             border: none;
-            padding: 12px 25px;
+            padding: 10px 15px;
             border-radius: 8px;
-            font-size: 1.1em;
+            font-size: 0.9em;
             cursor: pointer;
-            margin-top: 20px;
             transition: background-color 0.3s;
+            position: absolute; /* Sağ alta sabitleme */
+            right: 0;
+            bottom: 0;
         }
         
-        /* Kelime Listesi Stilleri (Study Mode) */
+        #feedback {
+            font-size: 1.1em;
+            font-weight: bold;
+            min-height: 25px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #hint-display {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #00bcd4;
+            text-align: left;
+            padding: 5px;
+            background-color: #0d0d0d;
+            border-radius: 4px;
+            flex-grow: 1; /* Kalan alanı doldur */
+            margin-right: 10px;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Kelime Listesi Stilleri */
         #word-list-table {
-            max-height: 400px;
+            max-height: 350px;
             overflow-y: auto;
-            margin: 20px 0;
+            margin: 15px 0;
             padding: 10px;
             border: 1px solid #444444;
             border-radius: 8px;
@@ -178,29 +217,25 @@
 
         .word-item {
             display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
+            flex-direction: column; 
+            padding: 8px 0;
             border-bottom: 1px dotted #333333;
-        }
-
-        .word-item:last-child {
-            border-bottom: none;
         }
 
         .english-word {
             font-weight: bold;
             color: #4caf50;
             text-transform: uppercase;
-            flex-basis: 40%;
+            font-size: 1.1em;
         }
 
         .turkish-meaning {
             color: #00bcd4;
-            flex-basis: 60%;
-            cursor: pointer; 
+            font-size: 0.9em;
+            margin-top: 3px;
+            cursor: pointer;
         }
 
-        /* Gizli Anlamlar Stili (Click-to-reveal için) */
         .meaning-hidden {
             color: transparent !important; 
             background-color: #333333; 
@@ -210,9 +245,6 @@
             transition: background-color 0.1s;
         }
         
-        .meaning-hidden:hover {
-             background-color: #555555;
-        }
     </style>
 </head>
 <body>
@@ -221,7 +253,7 @@
         
         <div id="start-screen">
             <h2>İngilizce Kelime Testine Hoş Geldiniz!</h2>
-            <p>Toplam **59** kelimelik bir teste başlamak üzeresiniz.</p>
+            <p>Toplam **94** kelimelik bir teste başlamak üzeresiniz.</p>
             <div id="initial-score-display">
                 <span style="color: #4caf50;">✅ Doğru: 0</span>
                 <span style="color: #f44336;">❌ Yanlış: 0</span>
@@ -230,25 +262,24 @@
 
             <h3>Test Modunu Seçin:</h3>
             <div id="test-mode-selection">
-                <button id="mode-1" class="mode-button test-mode-button" data-mode="synonym_to_word">1. İng. Tanım (Eş Anlam) &rarr; Kelime</button>
-                <button id="mode-2" class="mode-button test-mode-button" data-mode="word_to_synonym">2. Kelime &rarr; Eş Anlam</button>
+                <button id="mode-1" class="mode-button test-mode-button" data-mode="definition_to_word">1. İng. Tanım &rarr; Kelime</button>
+                <button id="mode-2" class="mode-button test-mode-button" data-mode="word_to_definition">2. Kelime &rarr; Tanım</button>
                 <button id="mode-3" class="mode-button test-mode-button" data-mode="word_to_turkish">3. İng. Kelime &rarr; Türkçe Anlam</button>
                 <button id="mode-4" class="mode-button test-mode-button" data-mode="turkish_to_word">4. Türkçe Anlam &rarr; İng. Kelime</button>
                 
-                <button id="mode-6" class="mode-button test-mode-button" data-mode="word_to_synonym">6. Kelime &rarr; Tanım (Eş Anlam)</button>
-                <button id="mode-8" class="mode-button test-mode-button" data-mode="not_available_context">8. Farklı Olanı Bulma</button>
-                
                 <button id="mode-5" class="mode-button test-mode-button" data-mode="not_available_antonym">5. Zıt Anlamlısını Sorma</button>
+                <button id="mode-6" class="mode-button test-mode-button" data-mode="word_to_definition">6. Kelime &rarr; Tanım (Şıklar)</button>
                 <button id="mode-7" class="mode-button test-mode-button" data-mode="not_available_sentence">7. Cümle Boşluk Doldurma</button>
+                <button id="mode-8" class="mode-button test-mode-button" data-mode="not_available_context">8. Farklı Olanı Bulma</button>
             </div>
             
-            <hr style="border-color: #333; margin: 30px 0;">
+            <hr style="border-color: #333; margin: 20px 0;">
             <button id="study-button" class="mode-button">KELİME ÇALIŞMA</button>
         </div>
         
         <div id="study-container" style="display:none;">
             <h2>Kelime Çalışma Bölümü (İngilizce - Türkçe)</h2>
-            <p>Kelimeleri alfabetik sıraya göre görebilirsiniz.</p>
+            <p>Kelimeler alfabetik sıraya göredir.</p>
             <button id="toggle-meanings-button" class="mode-button">ANLAMLARI GİZLE</button>
             <div id="word-list-table">
                 </div>
@@ -262,7 +293,7 @@
                 <span id="hint-count-display" style="color: #00bcd4;">💡 İpucu: 0</span>
             </div>
             
-            <div id="word-display">WORD LOADING...</div>
+            <div id="word-display">SORU YÜKLENİYOR...</div>
             
             <div id="options-container">
                 <button class="option-button" data-key="A"></button>
@@ -272,100 +303,129 @@
                 <button class="option-button" data-key="E"></button>
             </div>
 
-            <button id="hint-button">💡 İpucu Göster</button>
-            <div id="hint-display"></div>
             <div id="feedback"></div>
-            <button id="next-button" style="display:none;">Sonraki Kelime</button>
+            
+            <div id="hint-area">
+                <div id="hint-display"></div>
+                <button id="hint-button">💡 İpucu Göster</button>
+                <button id="next-button" style="display:none;">Sonraki Kelime</button>
+            </div>
         </div>
     </div>
 
     <script>
-        function toEnglishLowerCase(text) {
-            if (!text) return '';
-            return text.toLowerCase();
-        }
-        
+        // Türkçe küçük harf dönüşümü için
         function toTurkishLowerCase(text) {
             if (!text) return '';
             return text.toLocaleLowerCase('tr');
         }
 
-        // --- KELİME LİSTESİ: DOSYADAN PARSE EDİLEN 59 KELİME ---
-        // Liste içeriği "kelime listesi.docx" dosyasından oluşturulmuştur.
+        // --- KELİME LİSTESİ (94 KELİME) ---
         const allWords = [
-            { "english": "Ordinary", "turkish": toTurkishLowerCase("sıradan"), "synonym": "usual, common, typical" },
-            { "english": "Quaint", "turkish": toTurkishLowerCase("ilginç, sevimli eski tarz"), "synonym": "charming, picturesque, old-fashioned" },
-            { "english": "Outskirts", "turkish": toTurkishLowerCase("kenar mahalleler, şehrin dışı"), "synonym": "suburbs, fringe, edge" },
-            { "english": "Immersing", "turkish": toTurkishLowerCase("dalmak, kendini kaptırmak"), "synonym": "absorbing, engaging, plunging" },
-            { "english": "Fixing up", "turkish": toTurkishLowerCase("tamir etme, toparlama"), "synonym": "repairing, renovating, mending" },
-            { "english": "Relatively", "turkish": toTurkishLowerCase("nispeten"), "synonym": "comparatively, fairly, somewhat" },
-            { "english": "Uneventful", "turkish": toTurkishLowerCase("olaysız, sakin"), "synonym": "calm, quiet, routine" },
-            { "english": "Hurdle", "turkish": toTurkishLowerCase("engel"), "synonym": "obstacle, barrier, difficulty" },
-            { "english": "Encountered", "turkish": toTurkishLowerCase("karşılaştı"), "synonym": "met, came across, faced" },
-            { "english": "Draughty (Drafty)", "turkish": toTurkishLowerCase("cereyan yapan"), "synonym": "breezy, chilly, windy" },
-            { "english": "Crisp", "turkish": toTurkishLowerCase("serin/ferah; gevrek"), "synonym": "fresh, cool; crunchy" },
-            { "english": "Weird", "turkish": toTurkishLowerCase("tuhaf"), "synonym": "strange, odd, unusual" },
-            { "english": "Erratically", "turkish": toTurkishLowerCase("düzensizce"), "synonym": "unpredictably, irregularly, randomly" },
-            { "english": "Curiosity", "turkish": toTurkishLowerCase("merak"), "synonym": "inquisitiveness, interest, wonder" },
-            { "english": "Staring at", "turkish": toTurkishLowerCase("dik dik bakmak"), "synonym": "gazing at, looking at, watching" },
-            { "english": "Phenomenon", "turkish": toTurkishLowerCase("olgu, fenomen"), "synonym": "event, occurrence, happening" },
-            { "english": "Blend in", "turkish": toTurkishLowerCase("uyum sağlamak"), "synonym": "fit in, merge, integrate" },
-            { "english": "Abducted", "turkish": toTurkishLowerCase("kaçırıldı"), "synonym": "kidnapped, seized, taken away" },
-            { "english": "Aliens", "turkish": toTurkishLowerCase("uzaylılar"), "synonym": "extraterrestrials, beings, outsiders" },
-            { "english": "Spin", "turkish": toTurkishLowerCase("dönmek"), "synonym": "rotate, whirl, twirl" },
-            { "english": "Humanoid", "turkish": toTurkishLowerCase("insansı"), "synonym": "human-like, anthropoid" },
-            { "english": "Elongated", "turkish": toTurkishLowerCase("uzamış"), "synonym": "extended, lengthened, stretched" },
-            { "english": "Limbs", "turkish": toTurkishLowerCase("uzuvlar"), "synonym": "appendages, arms and legs" },
-            { "english": "Bluish", "turkish": toTurkishLowerCase("mavimsi"), "synonym": "blue-tinted, azure-ish" },
-            { "english": "Eerie", "turkish": toTurkishLowerCase("ürkütücü"), "synonym": "spooky, uncanny, creepy" },
-            { "english": "Grace", "turkish": toTurkishLowerCase("zarafet"), "synonym": "elegance, poise, refinement" },
-            { "english": "Approached", "turkish": toTurkishLowerCase("yaklaştı"), "synonym": "came near, moved toward, advanced" },
-            { "english": "Forehead", "turkish": toTurkishLowerCase("alın"), "synonym": "brow" },
-            { "english": "Echo", "turkish": toTurkishLowerCase("yankı"), "synonym": "reverberation, resound" },
-            { "english": "Glance", "turkish": toTurkishLowerCase("hızlı bakış"), "synonym": "peek, glimpse, look briefly" },
-            { "english": "Mutter", "turkish": toTurkishLowerCase("mırıldanmak"), "synonym": "mumble, murmur, whisper" },
-            { "english": "Telepathically", "turkish": toTurkishLowerCase("telepatik olarak"), "synonym": "psychically, mind-to-mind" },
-            { "english": "Subside", "turkish": toTurkishLowerCase("yatışmak"), "synonym": "diminish, lessen, ease" },
-            { "english": "Renew", "turkish": toTurkishLowerCase("yenilemek"), "synonym": "restore, refresh, revive" },
-            // Not: "Surged into overwhelming" cümlesi listede tek bir kelime gibi duruyor, onu tek bir giriş olarak bırakıyorum
-            { "english": "Surged into overwhelming", "turkish": toTurkishLowerCase("bunaltıcı şekilde yükseldi"), "synonym": "flooded, rushed, intensified" }, 
-            { "english": "Snooker", "turkish": toTurkishLowerCase("snooker (bilardo türü)"), "synonym": "—" }, // Eş anlam boş
-            { "english": "Consent", "turkish": toTurkishLowerCase("onay, rıza"), "synonym": "permission, approval, agreement" },
-            { "english": "Impeccable", "turkish": toTurkishLowerCase("kusursuz"), "synonym": "flawless, perfect, immaculate" },
-            { "english": "Precision", "turkish": toTurkishLowerCase("hassasiyet"), "synonym": "accuracy, exactness, meticulousness" },
-            { "english": "Initial", "turkish": toTurkishLowerCase("ilk, başlangıç"), "synonym": "first, preliminary, original" },
-            { "english": "Probe", "turkish": toTurkishLowerCase("incelemek"), "synonym": "investigate, examine, explore" },
-            { "english": "Nod", "turkish": toTurkishLowerCase("başını sallamak"), "synonym": "agree, bow, dip" },
-            { "english": "Confer", "turkish": toTurkishLowerCase("görüşmek, danışmak"), "synonym": "consult, discuss, deliberate" },
-            { "english": "Indicates", "turkish": toTurkishLowerCase("gösterir"), "synonym": "shows, signifies, points out" },
-            { "english": "Chuckling", "turkish": toTurkishLowerCase("kıkırdama"), "synonym": "giggling, laughing softly" },
-            { "english": "Unblinking", "turkish": toTurkishLowerCase("gözünü kırpmadan"), "synonym": "staring, fixed-eyed" },
-            { "english": "Respond", "turkish": toTurkishLowerCase("cevap vermek"), "synonym": "reply, answer, react" },
-            { "english": "Interstellar", "turkish": toTurkishLowerCase("yıldızlararası"), "synonym": "cosmic, between stars" },
-            { "english": "Kidnapped", "turkish": toTurkishLowerCase("kaçırıldı"), "synonym": "abducted, seized, taken" },
-            { "english": "Wisdom", "turkish": toTurkishLowerCase("bilgelik"), "synonym": "insight, knowledge, sagacity" },
-            { "english": "Insistence", "turkish": toTurkishLowerCase("ısrar"), "synonym": "persistence, demand, emphasis" },
-            { "english": "Intact", "turkish": toTurkishLowerCase("sağlam, bozulmamış"), "synonym": "undamaged, whole, complete" },
-            { "english": "Enhanced", "turkish": toTurkishLowerCase("geliştirilmiş"), "synonym": "improved, boosted, augmented" },
-            { "english": "Fizzing with", "turkish": toTurkishLowerCase("enerji dolu"), "synonym": "bubbling with, brimming with" },
-            { "english": "Resumed", "turkish": toTurkishLowerCase("devam etti"), "synonym": "continued, restarted, carried on" },
-            { "english": "Captivated", "turkish": toTurkishLowerCase("büyülenmiş"), "synonym": "fascinated, enchanted, enthralled" },
-            { "english": "Encounter", "turkish": toTurkishLowerCase("karşılaşma"), "synonym": "meeting, confrontation, run-in" },
-            { "english": "Cherished", "turkish": toTurkishLowerCase("değer verilen, çok sevilen"), "synonym": "treasured, beloved, precious" },
-            { "english": "Convinced", "turkish": toTurkishLowerCase("ikna olmuş"), "synonym": "persuaded, assured, certain" }
+            { "english": "Ordinary", "definition": "normal, usual, or happening most of the time", "turkish": toTurkishLowerCase("sıradan") },
+            { "english": "Quaint", "definition": "attractive in an unusual or old-fashioned way", "turkish": toTurkishLowerCase("ilginç, sevimli eski tarz") },
+            { "english": "Outskirts", "definition": "the areas of a town or city that are furthest from the center", "turkish": toTurkishLowerCase("kenar mahalleler, şehrin dışı") },
+            { "english": "Immersing", "definition": "becoming completely involved in something, or putting something into a liquid", "turkish": toTurkishLowerCase("dalmak, kendini kaptırmak") },
+            { "english": "Fixing up", "definition": "repairing or improving a building or piece of furniture", "turkish": toTurkishLowerCase("tamir etme, toparlama") },
+            { "english": "Relatively", "definition": "when compared to something else; quite or somewhat", "turkish": toTurkishLowerCase("nispeten") },
+            { "english": "Uneventful", "definition": "nothing interesting, exciting, or unusual happened", "turkish": toTurkishLowerCase("olaysız, sakin") },
+            { "english": "Hurdle", "definition": "a problem or difficulty that you must deal with", "turkish": toTurkishLowerCase("engel") },
+            { "english": "Encountered", "definition": "experienced, or met someone unexpectedly", "turkish": toTurkishLowerCase("karşılaştı") },
+            { "english": "Draughty (Drafty)", "definition": "having cold air current blowing through a room", "turkish": toTurkishLowerCase("cereyan yapan") },
+            { "english": "Crisp", "definition": "fresh, clean, and cool; or pleasantly hard and dry", "turkish": toTurkishLowerCase("serin/ferah; gevrek") },
+            { "english": "Weird", "definition": "very strange and unusual, often in a disturbing way", "turkish": toTurkishLowerCase("tuhaf") },
+            { "english": "Erratically", "definition": "in an unpredictable or inconsistent way", "turkish": toTurkishLowerCase("düzensizce") },
+            { "english": "Curiosity", "definition": "a strong desire to know or learn something", "turkish": toTurkishLowerCase("merak") },
+            { "english": "Staring at", "definition": "looking fixedly at someone or something for a long time", "turkish": toTurkishLowerCase("dik dik bakmak") },
+            { "english": "Phenomenon", "definition": "a fact or event that exists and can be seen, but is unusual or difficult to understand", "turkish": toTurkishLowerCase("olgu, fenomen") },
+            { "english": "Blend in", "definition": "to look or seem the same as the surrounding people or things", "turkish": toTurkishLowerCase("uyum sağlamak") },
+            { "english": "Abducted", "definition": "taken away illegally, especially using force", "turkish": toTurkishLowerCase("kaçırıldı") },
+            { "english": "Aliens", "definition": "imaginary creatures from outer space", "turkish": toTurkishLowerCase("uzaylılar") },
+            { "english": "Spin", "definition": "to turn around quickly, or to cause something to turn", "turkish": toTurkishLowerCase("dönmek") },
+            { "english": "Humanoid", "definition": "having a physical appearance resembling a human being", "turkish": toTurkishLowerCase("insansı") },
+            { "english": "Elongated", "definition": "made longer or stretched out", "turkish": toTurkishLowerCase("uzamış") },
+            { "english": "Limbs", "definition": "a person's or animal's arms and legs", "turkish": toTurkishLowerCase("uzuvlar") },
+            { "english": "Bluish", "definition": "having a slightly blue color", "turkish": toTurkishLowerCase("mavimsi") },
+            { "english": "Eerie", "definition": "strange, frightening, and mysterious", "turkish": toTurkishLowerCase("ürkütücü") },
+            { "english": "Grace", "definition": "a smooth and elegant way of moving", "turkish": toTurkishLowerCase("zarafet") },
+            { "english": "Approached", "definition": "came nearer to someone or something in distance or time", "turkish": toTurkishLowerCase("yaklaştı") },
+            { "english": "Forehead", "definition": "the area of the face above the eyes and below the hair", "turkish": toTurkishLowerCase("alın") },
+            { "english": "Echo", "definition": "a sound that is reflected back to the listener from a distance", "turkish": toTurkishLowerCase("yankı") },
+            { "english": "Glance", "definition": "to look quickly and briefly", "turkish": toTurkishLowerCase("hızlı bakış") },
+            { "english": "Mutter", "definition": "to speak quietly in an unclear way, usually showing annoyance", "turkish": toTurkishLowerCase("mırıldanmak") },
+            { "english": "Telepathically", "definition": "communicating thoughts directly to someone else's mind", "turkish": toTurkishLowerCase("telepatik olarak") },
+            { "english": "Subside", "definition": "to become less intense, severe, or violent", "turkish": toTurkishLowerCase("yatışmak") },
+            { "english": "Renew", "definition": "to start something again or replace something old", "turkish": toTurkishLowerCase("yenilemek") },
+            { "english": "Overwhelming", "definition": "difficult to fight against or deal with; very great in amount", "turkish": toTurkishLowerCase("bunaltıcı") }, 
+            { "english": "Surged into", "definition": "moved very quickly and suddenly in a particular direction", "turkish": toTurkishLowerCase("içine doğru aktı") }, 
+            { "english": "Snooker", "definition": "a game played on a table using cues and colored balls", "turkish": toTurkishLowerCase("snooker (bilardo türü)") },
+            { "english": "Consent", "definition": "permission or agreement to do something", "turkish": toTurkishLowerCase("onay, rıza") },
+            { "english": "Impeccable", "definition": "perfect, with no mistakes or faults", "turkish": toTurkishLowerCase("kusursuz") },
+            { "english": "Precision", "definition": "the quality of being exact and accurate", "turkish": toTurkishLowerCase("hassasiyet") },
+            { "english": "Initial", "definition": "happening at the beginning; first", "turkish": toTurkishLowerCase("ilk, başlangıç") },
+            { "english": "Probe", "definition": "to try to discover information or examine something thoroughly", "turkish": toTurkishLowerCase("incelemek") },
+            { "english": "Nod", "definition": "to move your head down and up, especially to show agreement", "turkish": toTurkishLowerCase("başını sallamak") },
+            { "english": "Confer", "definition": "to discuss something with someone to make a decision", "turkish": toTurkishLowerCase("görüşmek, danışmak") },
+            { "english": "Indicates", "definition": "shows or suggests something is true", "turkish": toTurkishLowerCase("gösterir") },
+            { "english": "Chuckling", "definition": "laughing quietly to yourself", "turkish": toTurkishLowerCase("kıkırdama") },
+            { "english": "Unblinking", "definition": "looking steadily without closing the eyes", "turkish": toTurkishLowerCase("gözünü kırpmadan") },
+            { "english": "Respond", "definition": "to say or do something as an answer or reaction", "turkish": toTurkishLowerCase("cevap vermek") },
+            { "english": "Interstellar", "definition": "between the stars or concerned with travel between stars", "turkish": toTurkishLowerCase("yıldızlararası") },
+            { "english": "Kidnapped", "definition": "illegally taken away and held as a prisoner", "turkish": toTurkishLowerCase("kaçırıldı") },
+            { "english": "Wisdom", "definition": "the ability to use knowledge and experience to make good decisions", "turkish": toTurkishLowerCase("bilgelik") },
+            { "english": "Insistence", "definition": "the act of demanding that something should happen", "turkish": toTurkishLowerCase("ısrar") },
+            { "english": "Intact", "definition": "complete and not damaged; untouched", "turkish": toTurkishLowerCase("sağlam, bozulmamış") },
+            { "english": "Enhanced", "definition": "improved or increased in quality or value", "turkish": toTurkishLowerCase("geliştirilmiş") },
+            { "english": "Fizzing with", "definition": "full of energy and excitement; bubbling with activity", "turkish": toTurkishLowerCase("enerji dolu") },
+            { "english": "Resumed", "definition": "started again after a pause or break", "turkish": toTurkishLowerCase("devam etti") },
+            { "english": "Captivated", "definition": "strongly attracted and interested; charmed or fascinated", "turkish": toTurkishLowerCase("büyülenmiş") },
+            { "english": "Encounter", "definition": "a meeting, especially one that is unexpected", "turkish": toTurkishLowerCase("karşılaşma") },
+            { "english": "Cherished", "definition": "loved and cared for very much; highly valued", "turkish": toTurkishLowerCase("değer verilen, çok sevilen") },
+            { "english": "Convinced", "definition": "completely sure about something; persuaded", "turkish": toTurkishLowerCase("ikna olmuş") },
+            { "english": "Curious", "definition": "having a strong desire to find out about something", "turkish": toTurkishLowerCase("meraklı") },
+            { "english": "Properly", "definition": "in a correct or satisfactory way", "turkish": toTurkishLowerCase("düzgünce") },
+            { "english": "Phone reception", "definition": "the quality or strength of the signal for a mobile phone", "turkish": toTurkishLowerCase("telefon çekimi") },
+            { "english": "Mark", "definition": "a visible sign or impression; a written symbol", "turkish": toTurkishLowerCase("işaret") },
+            { "english": "Civilization", "definition": "human society with its developed culture and organization", "turkish": toTurkishLowerCase("medeniyet") },
+            { "english": "Venture out", "definition": "to leave a safe place, often taking a risk", "turkish": toTurkishLowerCase("dışarı çıkmak, macera atılmak") },
+            { "english": "To head", "definition": "to move or travel in a particular direction", "turkish": toTurkishLowerCase("yönelmek, gitmek") },
+            { "english": "Set off", "definition": "to begin a journey or start an alarm", "turkish": toTurkishLowerCase("yola çıkmak, başlatmak") },
+            { "english": "Layout", "definition": "the way in which something is arranged or designed", "turkish": toTurkishLowerCase("düzen, yerleşim") },
+            { "english": "Approach", "definition": "a way of dealing with or thinking about a problem or task", "turkish": toTurkishLowerCase("yaklaşım") },
+            { "english": "Dull", "definition": "not exciting or interesting; boring", "turkish": toTurkishLowerCase("sıkıcı, donuk") },
+            { "english": "Dreary", "definition": "causing sadness or gloom; dull and depressing", "turkish": toTurkishLowerCase("kasvetli, iç karartıcı") },
+            { "english": "Branches", "definition": "parts of a tree growing out from the trunk; a section of a system", "turkish": toTurkishLowerCase("dallar") },
+            { "english": "Overgrown", "definition": "covered with too many plants that have not been controlled", "turkish": toTurkishLowerCase("aşırı büyümüş") },
+            { "english": "Greet", "definition": "to welcome or address someone in a friendly way", "turkish": toTurkishLowerCase("selamlamak") },
+            { "english": "Beckon", "definition": "to signal someone to come nearer, usually by a movement of the head or hand", "turkish": toTurkishLowerCase("işaret etmek, çağırmak") },
+            { "english": "Run errands", "definition": "to make a short trip to do a specific task, often for someone else", "turkish": toTurkishLowerCase("ayak işlerini halletmek") },
+            { "english": "Enduring", "definition": "lasting for a long time; able to survive hardship", "turkish": toTurkishLowerCase("dayanıklı, süregelen") },
+            { "english": "Competitive", "definition": "trying hard to be more successful than others", "turkish": toTurkishLowerCase("rekabetçi") },
+            { "english": "Assure", "definition": "to tell someone something confidently to remove doubt", "turkish": toTurkishLowerCase("temin etmek, garanti vermek") },
+            { "english": "Despite", "definition": "without being affected by; in spite of", "turkish": toTurkishLowerCase("rağmen") },
+            { "english": "Dreadful", "definition": "extremely bad or unpleasant; causing fear or terror", "turkish": toTurkishLowerCase("korkunç, berbat") },
+            { "english": "Efficient", "definition": "working well without wasting time or energy", "turkish": toTurkishLowerCase("verimli") },
+            { "english": "Shrug", "definition": "to raise your shoulders briefly to show you don't know or don't care", "turkish": toTurkishLowerCase("omuz silkmek") },
+            { "english": "Aggravate", "definition": "to make a bad situation or injury worse; to annoy someone", "turkish": toTurkishLowerCase("kötüleştirmek, sinirlendirmek") },
+            { "english": "My own sake", "definition": "for one's own benefit, advantage, or well-being", "turkish": toTurkishLowerCase("kendi iyiliğim için") },
+            { "english": "Insistent", "definition": "demanding strongly that something happens; persistent", "turkish": toTurkishLowerCase("ısrarcı") },
+            { "english": "Assume", "definition": "to believe something is true without having proof", "turkish": toTurkishLowerCase("varsaymak, farz etmek") },
+            { "english": "Irritable", "definition": "getting easily annoyed or made angry", "turkish": toTurkishLowerCase("sinirli, çabuk sinirlenen") },
+            { "english": "Strangely", "definition": "in an unusual or surprising way", "turkish": toTurkishLowerCase("tuhaf bir şekilde") },
+            { "english": "Ecstatic", "definition": "feeling extremely happy and excited", "turkish": toTurkishLowerCase("coşkulu, çok mutlu") },
+            { "english": "Hastily", "definition": "done quickly, often without careful thought", "turkish": toTurkishLowerCase("aceleyle") },
+            { "english": "Urge", "definition": "to encourage or strongly recommend that someone does something", "turkish": toTurkishLowerCase("zorlamak, teşvik etmek") },
+            { "english": "Impatient", "definition": "annoyed by people who are slow or by things that take a long time", "turkish": toTurkishLowerCase("sabırsız") }
         ];
-
 
         // --- GLOBAL DEĞİŞKENLER VE DOM ELEMENTLERİ ---
         let activeWordList = [];
         let currentWord = {};
         let currentCorrectAnswer = "";
-        let currentTurkishMeaning = ""; 
         let correctCount = 0;
         let incorrectCount = 0;
         let hintCount = 0; 
         let currentTestMode = null; 
-
         let areMeaningsHidden = false; 
 
         const startScreen = document.getElementById('start-screen');
@@ -382,14 +442,12 @@
         const wordListTable = document.getElementById('word-list-table'); 
         const backToStartButtonStudy = document.getElementById('back-to-start-button-study'); 
         const toggleMeaningsButton = document.getElementById('toggle-meanings-button'); 
-        
         const testModeButtons = document.querySelectorAll('.test-mode-button');
         
         const correctScoreDisplay = document.getElementById('correct-score');
         const incorrectScoreDisplay = document.getElementById('incorrect-score');
         const hintCountDisplay = document.getElementById('hint-count-display'); 
         const initialHintDisplay = document.getElementById('initial-hint-display'); 
-        
 
         // --- YARDIMCI VE GÖRÜNÜM FONKSİYONLARI ---
 
@@ -416,10 +474,9 @@
             startScreen.style.display = 'none';
             gameContainer.style.display = 'none';
             studyContainer.style.display = 'none';
-            document.getElementById(screenId).style.display = 'block';
+            document.getElementById(screenId).style.display = 'flex'; // app-container'ın flex yapısına uyum için flex
         }
 
-        // Kelime Listesi Oluşturma
         function renderStudyList() {
             if (wordListTable.innerHTML.trim() !== "") return;
             
@@ -428,14 +485,15 @@
 
             sortedWords.forEach(word => {
                 const cleanEnglish = word.english.toUpperCase().replace(/ \(.+\)/g, '');
-                // Türkçe anlamını ve eş anlamını göster
-                const fullTurkishMeaning = `${word.turkish.toUpperCase()} (Eş Anlam: ${word.synonym.toUpperCase()})`;
+                
+                // Çalışma modunda sadece Türkçe anlamı gösterelim
+                const turkishText = word.turkish.toUpperCase();
                 
                 htmlContent += `
                     <div class="word-item">
                         <span class="english-word">${cleanEnglish}</span>
-                        <span class="turkish-meaning" data-meaning-text="${fullTurkishMeaning}">
-                            ${fullTurkishMeaning}
+                        <span class="turkish-meaning" data-meaning-text="${turkishText}">
+                            ${turkishText}
                         </span>
                     </div>
                 `;
@@ -455,7 +513,6 @@
             });
         }
         
-        // Anlamları Gizle/Göster fonksiyonu
         function toggleMeanings() {
             areMeaningsHidden = !areMeaningsHidden;
             const meaningSpans = wordListTable.querySelectorAll('.turkish-meaning');
@@ -472,33 +529,25 @@
                 meaningSpans.forEach(span => {
                     span.classList.remove('meaning-hidden');
                     span.textContent = span.dataset.meaningText;
-                    span.style.cursor = 'pointer';
+                    span.style.cursor = 'default';
                 });
             }
         }
 
-
-        function showStartScreen() {
-            showScreen('start-screen');
-            currentTestMode = null; 
-        }
-
-        function showStudyMode() {
-            renderStudyList(); 
-            showScreen('study-container'); 
-            
-            // Çalışma ekranı açıldığında varsayılan olarak anlamları göster
-            areMeaningsHidden = false; 
-            toggleMeaningsButton.textContent = 'ANLAMLARI GİZLE';
-            wordListTable.querySelectorAll('.turkish-meaning').forEach(span => {
-                span.classList.remove('meaning-hidden');
-                span.textContent = span.dataset.meaningText;
-            });
-        }
-        
         function showHint() {
             if (!hintButton.disabled) { 
-                hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
+                let hintText = "";
+                
+                // Soru tipine göre ipucu göster
+                if (currentTestMode === 'word_to_turkish' || currentTestMode === 'word_to_definition') {
+                    // İngilizce kelime sorulduysa İngilizce tanımını göster
+                    hintText = `İNGİLİZCE TANIM: ${currentWord.definition.toUpperCase()}`;
+                } else if (currentTestMode === 'definition_to_word' || currentTestMode === 'turkish_to_word') {
+                    // Tanım veya Türkçe anlam sorulduysa İngilizce tanımını göster
+                     hintText = `İNGİLİZCE TANIM: ${currentWord.definition.toUpperCase()}`;
+                }
+                
+                hintDisplay.textContent = hintText;
                 hintButton.disabled = true;
                 hintCount++; 
                 updateScoreDisplay();
@@ -508,11 +557,10 @@
 
         // --- OYUN AKIŞI FONKSİYONLARI ---
         
-        // Test modunu ayarlar ve oyunu başlatır
         function selectTestMode(mode) {
             currentTestMode = mode;
             
-            // Gerekli verinin olmadığı modlar için uyarı göster
+            // Veri yetersizliği olan modlar için uyarı
             if (mode.startsWith('not_available')) {
                 let message = "";
                 if (mode === 'not_available_antonym') {
@@ -523,7 +571,7 @@
                     message = "Bu mod (Farklı Olanı Bulma) için gerekli kategori verileri mevcut değildir.";
                 }
                 alert(message);
-                showStartScreen();
+                currentTestMode = null;
                 return;
             }
             
@@ -538,8 +586,7 @@
             hintCount = 0; 
             updateScoreDisplay();
 
-            // Sadece synonym alanı boş olmayan kelimeleri de teste dahil edebiliriz
-            activeWordList = shuffleArray([...allWords].filter(w => w.synonym !== '—' || currentTestMode !== 'word_to_synonym'));
+            activeWordList = shuffleArray([...allWords]);
             
             showScreen('game-container'); 
             loadNewWord();
@@ -552,7 +599,7 @@
             
             hintDisplay.textContent = "";
             hintButton.disabled = false;
-            hintButton.style.display = 'block'; 
+            hintButton.style.display = 'inline-block'; 
             
             optionButtons.forEach(button => {
                 button.disabled = false;
@@ -574,8 +621,6 @@
             
             let questionText, correctOption, allPossibleDistractors;
             
-            currentTurkishMeaning = currentWord.turkish; // İpucu için Türkçe anlamını her zaman sakla
-
             if (currentTestMode === 'word_to_turkish') {
                 // Mod 3: İng. Kelimeyi verip Türkçesini sorma
                 questionText = `"${currentWord.english.toUpperCase().replace(/ \(.+\)/g, '')}" kelimesinin TÜRKÇE ANLAMI nedir?`;
@@ -588,15 +633,15 @@
                 correctOption = currentWord.english;
                 allPossibleDistractors = allWords.map(w => w.english).filter(e => e !== correctOption);
                 
-            } else if (currentTestMode === 'word_to_synonym') {
-                // Mod 2 & 6: Kelimeyi verip Eş anlam/Tanımını sorma
-                questionText = `"${currentWord.english.toUpperCase().replace(/ \(.+\)/g, '')}" kelimesinin EŞ ANLAMI (Tanımı) nedir?`;
-                correctOption = currentWord.synonym;
-                allPossibleDistractors = allWords.map(w => w.synonym).filter(s => s !== correctOption && s !== '—');
+            } else if (currentTestMode === 'word_to_definition' || currentTestMode === 'word_to_synonym') {
+                // Mod 2 & 6: Kelimeyi verip Tanımını sorma
+                questionText = `"${currentWord.english.toUpperCase().replace(/ \(.+\)/g, '')}" kelimesinin İNGİLİZCE TANIMI nedir?`;
+                correctOption = currentWord.definition;
+                allPossibleDistractors = allWords.map(w => w.definition).filter(d => d !== correctOption);
 
-            } else if (currentTestMode === 'synonym_to_word') {
-                // Mod 1: İng. Tanım (Eş Anlam) verip Kelimeyi sorma
-                questionText = `"${currentWord.synonym.toUpperCase()}" ne anlama gelmektedir?`;
+            } else if (currentTestMode === 'definition_to_word') {
+                // Mod 1: İng. Tanımı verip Kelimeyi sorma
+                questionText = `Aşağıdaki tanımın ait olduğu kelime nedir? \n\n **"${currentWord.definition.toUpperCase()}"**`;
                 correctOption = currentWord.english;
                 allPossibleDistractors = allWords.map(w => w.english).filter(e => e !== correctOption);
             }
@@ -613,11 +658,12 @@
             optionButtons.forEach((button, index) => {
                 let optionText = shuffledOptions[index];
 
-                // Eğer cevap Türkçe veya İngilizce kelimenin kendisiyse, parantezli kısımları temizle
-                if (currentTestMode === 'word_to_turkish' || currentTestMode === 'synonym_to_word' || currentTestMode === 'turkish_to_word') {
+                // Eğer cevap İngilizce kelimenin kendisiyse, parantezli kısımları temizle
+                if (currentTestMode === 'turkish_to_word' || currentTestMode === 'definition_to_word') {
                     optionText = optionText.toUpperCase().replace(/ \(.+\)/g, '');
-                } else {
-                    // Diğer modlarda (eş anlam/tanım) ise sadece büyük harf yap
+                } 
+                // Diğer modlarda (tanım/Türkçe anlam) ise sadece büyük harf yap
+                else {
                     optionText = optionText.toUpperCase();
                 }
 
@@ -643,7 +689,7 @@
                 }
             } else {
                 incorrectCount++;
-                feedbackDiv.textContent = `❌ Yanlış! Doğru cevap: "${currentCorrectAnswer.toUpperCase()}".`;
+                feedbackDiv.textContent = `❌ Yanlış! Doğru cevap: "${currentCorrectAnswer.toUpperCase().replace(/ \(.+\)/g, '')}".`;
                 if (selectedButton) {
                     selectedButton.classList.add('incorrect');
                 }
@@ -652,10 +698,11 @@
                 }
             }
             
-            // Yanlış bilindiğinde veya ipucu kullanılmadığında Türkçe anlamı geri bildirim olarak göster
+            // Yanlış bilindiğinde veya ipucu kullanılmadığında İngilizce tanımını geri bildirim olarak göster
             if (hintDisplay.textContent === "") {
-                 hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
+                 hintDisplay.textContent = `İNGİLİZCE TANIM: ${currentWord.definition.toUpperCase()}`;
             }
+
 
             updateScoreDisplay();
             nextButton.textContent = 'Sonraki Kelime';
@@ -671,8 +718,11 @@
         });
         
         hintButton.addEventListener('click', showHint); 
-        studyButton.addEventListener('click', showStudyMode); 
-        backToStartButtonStudy.addEventListener('click', showStartScreen); 
+        studyButton.addEventListener('click', () => {
+            renderStudyList();
+            showStudyMode();
+        }); 
+        backToStartButtonStudy.addEventListener('click', () => showScreen('start-screen')); 
         toggleMeaningsButton.addEventListener('click', toggleMeanings); 
 
         optionButtons.forEach(button => {
@@ -683,9 +733,9 @@
 
         nextButton.addEventListener('click', loadNewWord);
 
-        // Başlangıçta skoru göster ve Ana Ekranı göster
+        // Başlangıç
         updateScoreDisplay();
-        showStartScreen(); 
+        showScreen('start-screen'); 
 
     </script>
 </body>
