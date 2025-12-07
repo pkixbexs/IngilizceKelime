@@ -28,45 +28,50 @@
             text-align: center;
         }
 
-        #start-screen h2 {
+        #start-screen h2, #study-container h2 {
             color: #00bcd4;
-            margin-bottom: 50px;
+            margin-bottom: 20px;
         }
         
-        /* Başlatma Butonu */
-        #start-button { 
-            background-color: #4caf50; 
-            color: black;
+        /* Mod Butonları (Başlatma ve Çalışma) */
+        .mode-button {
             border: none;
-            padding: 20px 40px;
+            padding: 15px 30px;
             border-radius: 10px;
-            font-size: 1.5em;
+            font-size: 1.2em;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s;
-            margin-top: 20px;
+            margin: 10px;
         }
 
+        #start-button { 
+            background-color: #4caf50; 
+            color: black;
+        }
         #start-button:hover {
             background-color: #45a049;
         }
 
+        /* KELİME ÇALIŞMA butonu rengi */
+        #study-button, #back-to-start-button-study {
+            background-color: #ff9800;
+            color: black;
+        }
+        #study-button:hover, #back-to-start-button-study:hover {
+            background-color: #e68a00;
+        }
+
         /* Sayaç Stil Ayarı */
-        #score-display {
+        #score-display, #initial-score-display {
             font-size: 1.2em;
             font-weight: bold;
             margin-bottom: 15px;
-            color: #ff9800;
-            display: flex; /* Sayaçları yan yana dizmek için */
+            display: flex; 
             justify-content: space-around;
-        }
-        /* Başlangıç ekranındaki sayaçlar için de aynı stili kullanabiliriz */
-        #initial-score-display {
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-around;
+            padding: 10px 0;
+            background-color: #0d0d0d;
+            border-radius: 6px;
         }
         
         #word-display {
@@ -148,15 +153,39 @@
             transition: background-color 0.3s;
         }
         
-        #next-button:hover {
-            background-color: #e68a00;
+        /* Kelime Listesi Stilleri (Study Mode) */
+        #word-list-table {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #444444;
+            border-radius: 8px;
+            text-align: left;
+            background-color: #0d0d0d;
         }
-        
-        #hint-display {
-            color: #00bcd4; 
-            font-size: 1.1em; 
-            margin-top: 10px; 
-            min-height: 25px;
+
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dotted #333333;
+        }
+
+        .word-item:last-child {
+            border-bottom: none;
+        }
+
+        .english-word {
+            font-weight: bold;
+            color: #4caf50;
+            text-transform: uppercase;
+            flex-basis: 40%;
+        }
+
+        .turkish-meaning {
+            color: #00bcd4;
+            flex-basis: 60%;
         }
     </style>
 </head>
@@ -172,7 +201,16 @@
                 <span style="color: #f44336;">❌ Yanlış: 0</span>
                 <span id="initial-hint-display" style="color: #00bcd4;">💡 İpucu: 0</span>
             </div>
-            <button id="start-button">OYUNU BAŞLAT</button>
+            <button id="start-button" class="mode-button">TESTİ BAŞLAT</button>
+            <button id="study-button" class="mode-button">KELİME ÇALIŞMA</button>
+        </div>
+        
+        <div id="study-container" style="display:none;">
+            <h2>Kelime Çalışma Bölümü (İngilizce - Türkçe)</h2>
+            <p>Kelimeleri alfabetik sıraya göre görebilirsiniz.</p>
+            <div id="word-list-table">
+                </div>
+            <button id="back-to-start-button-study" class="mode-button">ANA EKRANA DÖN</button>
         </div>
         
         <div id="game-container" style="display:none;"> 
@@ -316,10 +354,11 @@
         let currentTurkishMeaning = ""; 
         let correctCount = 0;
         let incorrectCount = 0;
-        let hintCount = 0; // YENİ: İpucu sayacı
+        let hintCount = 0; 
 
         const startScreen = document.getElementById('start-screen');
         const gameContainer = document.getElementById('game-container');
+        const studyContainer = document.getElementById('study-container'); 
         const wordDisplay = document.getElementById('word-display');
         const optionsContainer = document.getElementById('options-container');
         const feedbackDiv = document.getElementById('feedback');
@@ -328,15 +367,18 @@
         const startButton = document.getElementById('start-button'); 
         const hintButton = document.getElementById('hint-button'); 
         const hintDisplay = document.getElementById('hint-display'); 
+        const studyButton = document.getElementById('study-button'); 
+        const wordListTable = document.getElementById('word-list-table'); 
+        const backToStartButtonStudy = document.getElementById('back-to-start-button-study'); 
         
         // Skor Sayaçları DOM Elementleri
         const correctScoreDisplay = document.getElementById('correct-score');
         const incorrectScoreDisplay = document.getElementById('incorrect-score');
-        const hintCountDisplay = document.getElementById('hint-count-display'); // YENİ
-        const initialHintDisplay = document.getElementById('initial-hint-display'); // YENİ
+        const hintCountDisplay = document.getElementById('hint-count-display'); 
+        const initialHintDisplay = document.getElementById('initial-hint-display'); 
         
 
-        // --- YARDIMCI FONKSİYONLAR ---
+        // --- YARDIMCI VE GÖRÜNÜM FONKSİYONLARI ---
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -349,7 +391,6 @@
         function updateScoreDisplay() {
             correctScoreDisplay.textContent = `✅ Doğru: ${correctCount}`;
             incorrectScoreDisplay.textContent = `❌ Yanlış: ${incorrectCount}`;
-            // YENİ: İpucu sayacını güncelle
             if (hintCountDisplay) { 
                  hintCountDisplay.textContent = `💡 İpucu: ${hintCount}`;
             }
@@ -357,14 +398,55 @@
                 initialHintDisplay.textContent = `💡 İpucu: ${hintCount}`;
             }
         }
+
+        // Genel Ekran Gösterim Yöneticisi
+        function showScreen(screenId) {
+            // Tüm ana ekranları gizle
+            startScreen.style.display = 'none';
+            gameContainer.style.display = 'none';
+            studyContainer.style.display = 'none';
+
+            // İstenen ekranı göster
+            document.getElementById(screenId).style.display = 'block';
+        }
+
+        // Kelime Listesi Oluşturma
+        function renderStudyList() {
+            // Eğer liste zaten oluşturulmuşsa (tekrar tekrar çağrılmasını önlemek için)
+            if (wordListTable.innerHTML.trim() !== "") return;
+            
+            let htmlContent = '';
+            
+            // Kelimeleri İngilizceye göre sırala
+            const sortedWords = [...allWords].sort((a, b) => a.english.localeCompare(b.english));
+
+            sortedWords.forEach(word => {
+                // İngilizce kelimenin parantez içindeki kısımları temizle (Drafty gibi)
+                const cleanEnglish = word.english.toUpperCase().replace(/ \(.+\)/g, '');
+                htmlContent += `
+                    <div class="word-item">
+                        <span class="english-word">${cleanEnglish}</span>
+                        <span class="turkish-meaning">${word.turkish.toUpperCase()}</span>
+                    </div>
+                `;
+            });
+            
+            wordListTable.innerHTML = htmlContent;
+        }
+
+        function showStartScreen() {
+            showScreen('start-screen');
+        }
+
+        function showStudyMode() {
+            renderStudyList(); // Listeyi oluştur
+            showScreen('study-container'); // Çalışma ekranını göster
+        }
         
         function showHint() {
-            // İpucu butonu devre dışı değilse (yani bu kelime için ilk kullanım ise)
             if (!hintButton.disabled) { 
                 hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
                 hintButton.disabled = true;
-                
-                // YENİ: Sayacı artır ve gösterimi güncelle
                 hintCount++; 
                 updateScoreDisplay();
             }
@@ -376,14 +458,12 @@
         function startGame() {
             correctCount = 0;
             incorrectCount = 0;
-            hintCount = 0; // YENİ: Sayacı sıfırla
+            hintCount = 0; 
             updateScoreDisplay();
 
             activeWordList = shuffleArray([...allWords]);
             
-            startScreen.style.display = 'none';
-            gameContainer.style.display = 'block';
-
+            showScreen('game-container'); // Oyun ekranına geç
             loadNewWord();
         }
 
@@ -392,7 +472,6 @@
             nextButton.style.display = 'none';
             optionsContainer.style.display = 'block';
             
-            // İpucu butonunu sıfırla
             hintDisplay.textContent = "";
             hintButton.disabled = false;
             hintButton.style.display = 'block'; 
@@ -407,12 +486,10 @@
                 wordDisplay.textContent = "CONGRATULATIONS! TEST FINISHED.";
                 optionsContainer.style.display = 'none';
                 hintButton.style.display = 'none';
-                // YENİ: Final skoruna ipucu sayacını ekle
-                feedbackDiv.textContent = `FINAL SCORE: Correct: ${correctCount} / Incorrect: ${incorrectCount} / Hints Used: ${hintCount}`;
+                feedbackDiv.textContent = `FINAL SCORE: Doğru: ${correctCount} / Yanlış: ${incorrectCount} / İpucu Kullanımı: ${hintCount}`;
                 return;
             }
 
-            // 1. Rastgele kelime seç
             const randomIndex = Math.floor(Math.random() * activeWordList.length);
             currentWord = activeWordList[randomIndex];
             
@@ -423,26 +500,22 @@
 
             activeWordList.splice(randomIndex, 1); 
 
-            // 2. Yanlış şıkları hazırla (4 adet)
             const allDefinitions = allWords.map(w => w.definition);
             
             let wrongAnswers = allDefinitions.filter(d => d !== currentCorrectAnswer);
             
             wrongAnswers = shuffleArray(wrongAnswers).slice(0, 4); 
 
-            // 3. Şıkları oluştur ve karıştır
             const allOptions = [currentCorrectAnswer, ...wrongAnswers];
             const shuffledOptions = shuffleArray(allOptions);
 
-            // 4. Şıkları butona yerleştir
             optionButtons.forEach((button, index) => {
-                button.textContent = `${String.fromCharCode(65 + index)}) ${toEnglishLowerCase(shuffledOptions[index])}`; 
+                button.textContent = `${String.fromCharCode(65 + index + 1)}) ${toEnglishLowerCase(shuffledOptions[index])}`; 
                 button.value = shuffledOptions[index];
             });
         }
 
         function checkAnswer(selectedMeaning) {
-            // Cevap verildikten sonra hem şıkları hem de ipucu butonunu devre dışı bırak
             optionButtons.forEach(button => {
                 button.disabled = true;
             });
@@ -453,13 +526,13 @@
 
             if (selectedMeaning === currentCorrectAnswer) {
                 correctCount++;
-                feedbackDiv.textContent = "✅ Correct!";
+                feedbackDiv.textContent = "✅ Doğru Cevap!";
                 if (selectedButton) {
                     selectedButton.classList.add('correct');
                 }
             } else {
                 incorrectCount++;
-                feedbackDiv.textContent = `❌ Incorrect! The correct definition was: "${currentCorrectAnswer}".`;
+                feedbackDiv.textContent = `❌ Yanlış! Doğru tanım: "${currentCorrectAnswer}".`;
                 if (selectedButton) {
                     selectedButton.classList.add('incorrect');
                 }
@@ -469,18 +542,20 @@
             }
             
             // Yanlış bilindiğinde veya ipucu kullanılmadığında Türkçe anlamı geri bildirim olarak göster
-            if (selectedMeaning !== currentCorrectAnswer && hintDisplay.textContent === "") {
+            if (hintDisplay.textContent === "") {
                  hintDisplay.textContent = `TÜRKÇE ANLAMI: ${currentTurkishMeaning.toUpperCase()}`;
             }
 
             updateScoreDisplay();
-            nextButton.textContent = 'Next Word';
+            nextButton.textContent = 'Sonraki Kelime';
             nextButton.style.display = 'block';
         }
 
         // --- EVENT DİNLEYİCİLERİ ---
         startButton.addEventListener('click', startGame); 
         hintButton.addEventListener('click', showHint); 
+        studyButton.addEventListener('click', showStudyMode); // Kelime Çalışma Moduna Git
+        backToStartButtonStudy.addEventListener('click', showStartScreen); // Geri Dön
 
         optionButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -489,6 +564,10 @@
         });
 
         nextButton.addEventListener('click', loadNewWord);
+
+        // Başlangıçta skoru göster
+        updateScoreDisplay();
+        showStartScreen(); // Uygulama başlangıcında Ana Ekranı göster
 
     </script>
 </body>
